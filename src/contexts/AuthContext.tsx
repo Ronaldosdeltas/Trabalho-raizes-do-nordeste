@@ -7,6 +7,7 @@ interface RegisterData {
   email: string;
   password: string;
   lgpdConsent: boolean;
+  birthDate?: string;
 }
 
 interface UpdateProfileData {
@@ -72,6 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password: data.password,
       createdAt: new Date().toISOString(),
       lgpdConsent: data.lgpdConsent,
+      birthDate: data.birthDate,
     };
     authService.createUser(newUser);
     const session: AuthSession = { userId: newUser.id, email: newUser.email, name: newUser.name };

@@ -7,6 +7,7 @@ export interface User {
   password: string;
   createdAt: string;
   lgpdConsent: boolean;
+  birthDate?: string; // YYYY-MM-DD
 }
 
 export interface AuthSession {
@@ -69,8 +70,8 @@ export interface Coupon {
 export type OrderStatus =
   | 'Pedido recebido'
   | 'Em preparo'
-  | 'Em entrega'
-  | 'Entregue'
+  | 'Pronto para retirada'
+  | 'Retirado'
   | 'Cancelado';
 
 export interface OrderItem {
@@ -82,6 +83,7 @@ export interface OrderItem {
 export interface Order {
   id: string;
   userId: string;
+  unitId?: string;
   items: OrderItem[];
   subtotal: number;
   discount: number;
@@ -89,6 +91,23 @@ export interface Order {
   coupon?: Coupon;
   status: OrderStatus;
   createdAt: string;
+}
+
+export interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  role: 'admin' | 'manager';
+  unitId?: string;
+}
+
+export interface AdminSession {
+  adminId: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'manager';
+  unitId?: string;
 }
 
 export interface ProductReview {
@@ -99,4 +118,47 @@ export interface ProductReview {
   rating: number;
   comment?: string;
   createdAt: string;
+}
+
+export type LoyaltyLevel = 'Bronze' | 'Prata' | 'Ouro';
+
+export type PointsTransactionType = 'earned' | 'redeemed' | 'bonus';
+
+export interface PointsTransaction {
+  id: string;
+  type: PointsTransactionType;
+  points: number;
+  description: string;
+  createdAt: string;
+  expiresAt?: string;
+  orderId?: string;
+}
+
+export interface LoyaltyProfile {
+  userId: string;
+  balance: number;
+  lifetimePoints: number;
+  transactions: PointsTransaction[];
+  lastBirthdayBonusYear: number | null;
+}
+
+export interface Reward {
+  id: string;
+  name: string;
+  description: string;
+  pointsCost: number;
+  type: 'discount' | 'freeProduct' | 'freeShipping';
+  value?: number;
+  emoji: string;
+}
+
+export interface LoyaltyCoupon {
+  code: string;
+  type: 'percentage' | 'fixed';
+  value: number;
+  description: string;
+  minOrder?: number;
+  userId: string;
+  expiresAt: string;
+  usedAt?: string;
 }

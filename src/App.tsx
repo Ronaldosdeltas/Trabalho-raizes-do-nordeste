@@ -1,7 +1,10 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
+import { LoyaltyProvider } from './contexts/LoyaltyContext';
+import { AdminProvider } from './contexts/AdminContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { AdminProtectedRoute } from './components/admin/AdminProtectedRoute';
 import { Home } from './pages/Home';
 import { Cart } from './pages/Cart';
 import { Login } from './pages/Login';
@@ -13,11 +16,19 @@ import { Menu } from './pages/Menu';
 import { ProductDetail } from './pages/ProductDetail';
 import { Orders } from './pages/Orders';
 import { OrderDetail } from './pages/OrderDetail';
+import { Fidelidade } from './pages/Fidelidade';
+import { AdminLogin } from './pages/admin/AdminLogin';
+import { AdminDashboard } from './pages/admin/AdminDashboard';
+import { AdminProducts } from './pages/admin/AdminProducts';
+import { AdminOrders } from './pages/admin/AdminOrders';
+import { AdminReports } from './pages/admin/AdminReports';
 
 function App() {
   return (
     <BrowserRouter>
+      <AdminProvider>
       <AuthProvider>
+        <LoyaltyProvider>
         <CartProvider>
           <Routes>
             <Route path="/" element={<Home />} />
@@ -52,9 +63,38 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/fidelidade"
+              element={
+                <ProtectedRoute>
+                  <Fidelidade />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Admin routes */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route
+              path="/admin/dashboard"
+              element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>}
+            />
+            <Route
+              path="/admin/produtos"
+              element={<AdminProtectedRoute><AdminProducts /></AdminProtectedRoute>}
+            />
+            <Route
+              path="/admin/pedidos"
+              element={<AdminProtectedRoute><AdminOrders /></AdminProtectedRoute>}
+            />
+            <Route
+              path="/admin/relatorios"
+              element={<AdminProtectedRoute><AdminReports /></AdminProtectedRoute>}
+            />
           </Routes>
         </CartProvider>
+        </LoyaltyProvider>
       </AuthProvider>
+      </AdminProvider>
     </BrowserRouter>
   );
 }

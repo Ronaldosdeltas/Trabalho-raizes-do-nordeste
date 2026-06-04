@@ -8,6 +8,12 @@ export const orderService = {
     return data ? (JSON.parse(data) as Order[]) : [];
   },
 
+  getAllOrders(): Order[] {
+    return this.getOrders().sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+  },
+
   getUserOrders(userId: string): Order[] {
     return this.getOrders()
       .filter(o => o.userId === userId)

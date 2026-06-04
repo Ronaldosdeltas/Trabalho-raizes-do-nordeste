@@ -1,0 +1,58 @@
+import type { Reward } from '../types';
+
+export const rewards: Reward[] = [
+  {
+    id: 'reward-01',
+    name: 'Desconto R$5',
+    description: 'Cupom de R$5 de desconto em qualquer pedido.',
+    pointsCost: 100,
+    type: 'discount',
+    value: 5,
+    emoji: '🎫',
+  },
+  {
+    id: 'reward-02',
+    name: 'Desconto R$10',
+    description: 'Cupom de R$10 de desconto em pedidos acima de R$30.',
+    pointsCost: 200,
+    type: 'discount',
+    value: 10,
+    emoji: '🏷️',
+  },
+  {
+    id: 'reward-03',
+    name: 'Desconto R$25',
+    description: 'Cupom de R$25 de desconto em pedidos acima de R$60.',
+    pointsCost: 450,
+    type: 'discount',
+    value: 25,
+    emoji: '💰',
+  },
+  {
+    id: 'reward-04',
+    name: 'Frete Grátis',
+    description: 'Desconto de R$15 no próximo pedido (equivalente ao frete).',
+    pointsCost: 300,
+    type: 'freeShipping',
+    value: 15,
+    emoji: '🚚',
+  },
+  {
+    id: 'reward-05',
+    name: 'Produto Grátis',
+    description: 'Desconto de até R$20 para resgatar um produto.',
+    pointsCost: 800,
+    type: 'freeProduct',
+    value: 20,
+    emoji: '🎁',
+  },
+  {
+    id: 'reward-06',
+    name: 'Produto Premium',
+    description: 'Desconto de até R$40 para resgatar um produto premium.',
+    pointsCost: 1500,
+    type: 'freeProduct',
+    value: 40,
+    emoji: '🌟',
+  },
+];

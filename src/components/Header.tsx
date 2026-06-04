@@ -26,9 +26,14 @@ export function Header() {
             Cardápio
           </Link>
           {currentUser && (
-            <Link to="/pedidos" className="text-amber-100 hover:text-white text-sm font-medium transition-colors">
-              Meus Pedidos
-            </Link>
+            <>
+              <Link to="/pedidos" className="text-amber-100 hover:text-white text-sm font-medium transition-colors">
+                Meus Pedidos
+              </Link>
+              <Link to="/fidelidade" className="text-amber-100 hover:text-white text-sm font-medium transition-colors flex items-center gap-1">
+                <span>⭐</span> Fidelidade
+              </Link>
+            </>
           )}
         </nav>
 

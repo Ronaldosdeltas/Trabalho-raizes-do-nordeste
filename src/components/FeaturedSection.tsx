@@ -1,9 +1,9 @@
-import { products } from '../data/products';
+import { productService } from '../services/productService';
 import { isSeasonalActive } from '../utils/seasonal';
 import { ProductCard } from './ProductCard';
 
 export function FeaturedSection() {
-  const featured = products.filter(
+  const featured = productService.getProducts().filter(
     p => p.featured && (!p.seasonal || isSeasonalActive(p.seasonal))
   );
 

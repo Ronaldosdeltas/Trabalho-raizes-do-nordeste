@@ -15,6 +15,7 @@ export function Register() {
   const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [birthDate, setBirthDate] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [lgpdConsent, setLgpdConsent] = useState(false);
@@ -42,7 +43,7 @@ export function Register() {
       return;
     }
     setErrors({});
-    const result = register({ name: name.trim(), email, password, lgpdConsent });
+    const result = register({ name: name.trim(), email, password, lgpdConsent, birthDate: birthDate || undefined });
     if (result.success) {
       navigate('/');
     } else {
@@ -86,6 +87,21 @@ export function Register() {
               placeholder="seu@email.com"
             />
             {errors.email && <p className="text-red-500 text-xs mt-1">⚠️ {errors.email}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Data de nascimento{' '}
+              <span className="text-amber-600 font-normal">(opcional — para bônus de aniversário)</span>
+            </label>
+            <input
+              type="date"
+              value={birthDate}
+              onChange={e => setBirthDate(e.target.value)}
+              autoComplete="bday"
+              className={inputClass}
+              max={new Date().toISOString().split('T')[0]}
+            />
           </div>
 
           <div>

@@ -5,13 +5,14 @@ import { SearchBar } from '../components/SearchBar';
 import { CategoryFilter } from '../components/CategoryFilter';
 import { ProductCard } from '../components/ProductCard';
 import { FeaturedSection } from '../components/FeaturedSection';
-import { products } from '../data/products';
+import { productService } from '../services/productService';
 import { isSeasonalActive } from '../utils/seasonal';
 import type { Category } from '../types';
 
 export function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
+  const [products] = useState(() => productService.getProducts());
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => {

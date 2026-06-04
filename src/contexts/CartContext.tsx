@@ -1,11 +1,14 @@
 import { createContext, useContext, useState, useMemo, type ReactNode } from 'react';
 import type { Product, CartItem, Coupon, Order } from '../types';
-import { products as allProducts } from '../data/products';
 import { coupons } from '../data/coupons';
 import { orderService } from '../services/orderService';
+import { loyaltyService } from '../services/loyaltyService';
+import { productService } from '../services/productService';
 
 interface CartContextType {
   items: CartItem[];
+  currentUnitId: string | null;
+  setCurrentUnit: (unitId: string | null) => void;
   addToCart: (product: Product) => void;
   addMultipleToCart: (newItems: { product: Product; quantity: number }[]) => void;
   removeFromCart: (productId: number) => void;
@@ -27,6 +30,9 @@ const CartContext = createContext<CartContextType | null>(null);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [currentUnitId, setCurrentUnitId] = useState<string | null>(null);
+
+  const setCurrentUnit = (unitId: string | null) => setCurrentUnitId(unitId);
 
   const addToCart = (product: Product) => {
     setItems(prev => {
@@ -96,24 +102,54 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const total = Math.max(0, subtotal - discount);
 
   const applyCoupon = (code: string): { success: boolean; error?: string } => {
-    const coupon = coupons.find(c => c.code.toUpperCase() === code.trim().toUpperCase());
-    if (!coupon) return { success: false, error: 'Cupom inválido ou inexistente.' };
-    if (coupon.minOrder && subtotal < coupon.minOrder) {
-      return {
-        success: false,
-        error: `Pedido mínimo de R$ ${coupon.minOrder.toFixed(2).replace('.', ',')} para este cupom.`,
-      };
+    const trimmed = code.trim().toUpperCase();
+
+    // Check static coupons
+    const staticCoupon = coupons.find(c => c.code.toUpperCase() === trimmed);
+    if (staticCoupon) {
+      if (staticCoupon.minOrder && subtotal < staticCoupon.minOrder) {
+        return {
+          success: false,
+          error: `Pedido mínimo de R$ ${staticCoupon.minOrder.toFixed(2).replace('.', ',')} para este cupom.`,
+        };
+      }
+      setAppliedCoupon(staticCoupon);
+      return { success: true };
     }
-    setAppliedCoupon(coupon);
-    return { success: true };
+
+    // Check loyalty coupons
+    const loyaltyCoupon = loyaltyService.getLoyaltyCouponByCode(trimmed);
+    if (loyaltyCoupon) {
+      if (loyaltyCoupon.usedAt) return { success: false, error: 'Este cupom já foi utilizado.' };
+      if (new Date(loyaltyCoupon.expiresAt) < new Date()) {
+        return { success: false, error: 'Cupom expirado.' };
+      }
+      if (loyaltyCoupon.minOrder && subtotal < loyaltyCoupon.minOrder) {
+        return {
+          success: false,
+          error: `Pedido mínimo de R$ ${loyaltyCoupon.minOrder.toFixed(2).replace('.', ',')} para este cupom.`,
+        };
+      }
+      setAppliedCoupon({
+        code: loyaltyCoupon.code,
+        type: loyaltyCoupon.type,
+        value: loyaltyCoupon.value,
+        description: loyaltyCoupon.description,
+        minOrder: loyaltyCoupon.minOrder,
+      });
+      return { success: true };
+    }
+
+    return { success: false, error: 'Cupom inválido ou inexistente.' };
   };
 
   const removeCoupon = () => setAppliedCoupon(null);
 
   // Verifica disponibilidade atual dos produtos no carrinho
   const validateCart = (): Product[] => {
+    const current = productService.getProducts();
     return items
-      .map(item => allProducts.find(p => p.id === item.product.id))
+      .map(item => current.find(p => p.id === item.product.id))
       .filter((p): p is Product => p !== undefined && !p.available);
   };
 
@@ -123,6 +159,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const order: Order = {
       id: crypto.randomUUID(),
       userId,
+      unitId: currentUnitId ?? undefined,
       items: items.map(item => ({
         product: item.product,
         quantity: item.quantity,
@@ -137,6 +174,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     };
 
     orderService.createOrder(order);
+
+    // Mark loyalty coupon as used if applicable
+    if (appliedCoupon) {
+      loyaltyService.markLoyaltyCouponUsed(appliedCoupon.code);
+    }
+
+    // Award loyalty points for the order
+    loyaltyService.awardOrderPoints(userId, order.id, order.total);
+
     clearCart();
     return { success: true, orderId: order.id };
   };
@@ -144,7 +190,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   return (
     <CartContext.Provider
       value={{
-        items, addToCart, addMultipleToCart, removeFromCart, updateQuantity, clearCart,
+        items, currentUnitId, setCurrentUnit,
+        addToCart, addMultipleToCart, removeFromCart, updateQuantity, clearCart,
         totalItems, subtotal, discount, total,
         appliedCoupon, applyCoupon, removeCoupon,
         validateCart, checkout,

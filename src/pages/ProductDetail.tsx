@@ -1,8 +1,8 @@
 import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { Header } from '../components/Header';
 import { StarRating } from '../components/StarRating';
-import { products } from '../data/products';
-import { units } from '../data/units';
+import { productService } from '../services/productService';
+import { unitService } from '../services/unitService';
 import { isSeasonalActive } from '../utils/seasonal';
 import { reviewService } from '../services/reviewService';
 import { useCart } from '../contexts/CartContext';
@@ -13,7 +13,7 @@ export function ProductDetail() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
-  const product = products.find(p => p.id === Number(productId));
+  const product = productService.getById(Number(productId));
   if (!product) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -31,7 +31,7 @@ export function ProductDetail() {
 
   // Disponibilidade: usa o contexto de unidade se fornecido
   const unitId = searchParams.get('unit');
-  const unit = units.find(u => u.id === unitId);
+  const unit = unitService.getUnit(unitId ?? '');
   const unitEntry = unit?.products.find(up => up.productId === product.id);
   const isAvailable = unitEntry ? unitEntry.available : product.available;
 

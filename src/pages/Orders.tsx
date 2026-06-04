@@ -6,11 +6,11 @@ import { orderService } from '../services/orderService';
 import type { Order, OrderStatus } from '../types';
 
 const statusConfig: Record<OrderStatus, { label: string; color: string; dot: string }> = {
-  'Pedido recebido': { label: 'Pedido recebido', color: 'bg-blue-100 text-blue-700', dot: 'bg-blue-500' },
-  'Em preparo':      { label: 'Em preparo',      color: 'bg-amber-100 text-amber-700', dot: 'bg-amber-500' },
-  'Em entrega':      { label: 'Em entrega',      color: 'bg-purple-100 text-purple-700', dot: 'bg-purple-500' },
-  'Entregue':        { label: 'Entregue',        color: 'bg-green-100 text-green-700', dot: 'bg-green-500' },
-  'Cancelado':       { label: 'Cancelado',       color: 'bg-red-100 text-red-600', dot: 'bg-red-500' },
+  'Pedido recebido':    { label: 'Pedido recebido',    color: 'bg-blue-100 text-blue-700',   dot: 'bg-blue-500' },
+  'Em preparo':         { label: 'Em preparo',         color: 'bg-amber-100 text-amber-700', dot: 'bg-amber-500' },
+  'Pronto para retirada': { label: 'Pronto para retirada', color: 'bg-purple-100 text-purple-700', dot: 'bg-purple-500' },
+  'Retirado':           { label: 'Retirado',           color: 'bg-green-100 text-green-700', dot: 'bg-green-500' },
+  'Cancelado':          { label: 'Cancelado',          color: 'bg-red-100 text-red-600',     dot: 'bg-red-500' },
 };
 
 const fmt = (v: number) => `R$ ${v.toFixed(2).replace('.', ',')}`;

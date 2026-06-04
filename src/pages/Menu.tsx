@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams, Navigate, Link } from 'react-router-dom';
 import { Header } from '../components/Header';
 import { ProductCard } from '../components/ProductCard';
-import { units } from '../data/units';
-import { products } from '../data/products';
+import { productService } from '../services/productService';
+import { unitService } from '../services/unitService';
 import { isSeasonalActive } from '../utils/seasonal';
+import { useCart } from '../contexts/CartContext';
 import type { Category } from '../types';
 
 const categories: Category[] = ['Comidas Típicas', 'Bebidas Regionais', 'Doces'];
@@ -17,9 +18,19 @@ const categoryEmojis: Record<Category, string> = {
 export function Menu() {
   const { unitId } = useParams<{ unitId: string }>();
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
+  const [products] = useState(() => productService.getProducts());
+  const { setCurrentUnit } = useCart();
 
-  const unit = units.find(u => u.id === unitId);
+  const unit = unitService.getUnit(unitId ?? '');
   if (!unit) return <Navigate to="/cardapio" replace />;
+
+  // Inform cart of selected unit
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    setCurrentUnit(unit.id);
+    return () => setCurrentUnit(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [unit.id]);
 
   // Mapa de disponibilidade por unidade
   const unitAvailMap = new Map(unit.products.map(up => [up.productId, up.available]));
@@ -34,7 +45,7 @@ export function Menu() {
       })
       .map(p => ({ ...p, available: unitAvailMap.get(p.id) ?? true }));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [unit.id]);
+  }, [unit.id, products]);
 
   const seasonalProducts = menuProducts.filter(p => p.seasonal);
 
