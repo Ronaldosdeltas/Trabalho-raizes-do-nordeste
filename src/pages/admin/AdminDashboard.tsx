@@ -41,10 +41,10 @@ export function AdminDashboard() {
   const units = unitService.getUnits();
 
   const statCards = [
-    { label: 'Pedidos hoje', value: stats.todayOrders, icon: '📦', color: 'bg-blue-50 border-blue-200 text-blue-700' },
-    { label: 'Receita hoje', value: fmt(stats.todayRevenue), icon: '💰', color: 'bg-green-50 border-green-200 text-green-700' },
-    { label: 'Pendentes', value: stats.pending, icon: '⏳', color: 'bg-amber-50 border-amber-200 text-amber-700' },
-    { label: 'Produtos ativos', value: stats.products, icon: '🍽️', color: 'bg-purple-50 border-purple-200 text-purple-700' },
+    { label: 'Pedidos hoje', value: stats.todayOrders, color: 'bg-blue-50 border-blue-200 text-blue-700' },
+    { label: 'Receita hoje', value: fmt(stats.todayRevenue), color: 'bg-green-50 border-green-200 text-green-700' },
+    { label: 'Pendentes', value: stats.pending, color: 'bg-amber-50 border-amber-200 text-amber-700' },
+    { label: 'Produtos ativos', value: stats.products, color: 'bg-purple-50 border-purple-200 text-purple-700' },
   ];
 
   const statusColors: Record<string, string> = {
@@ -76,7 +76,6 @@ export function AdminDashboard() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {statCards.map(card => (
             <div key={card.label} className={`rounded-2xl border p-5 ${card.color}`}>
-              <p className="text-2xl mb-2">{card.icon}</p>
               <p className="text-2xl font-black">{card.value}</p>
               <p className="text-sm font-medium mt-1">{card.label}</p>
             </div>
@@ -96,14 +95,14 @@ export function AdminDashboard() {
           <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
             <h2 className="font-semibold text-gray-800 mb-3">Ações Rápidas</h2>
             <div className="space-y-2">
-              <Link to="/admin/pedidos" className="flex items-center gap-2 text-sm text-amber-700 hover:text-amber-800 font-medium">
-                📦 Gerenciar pedidos pendentes ({stats.pending})
+              <Link to="/admin/pedidos" className="block text-sm text-amber-700 hover:text-amber-800 font-medium">
+                Gerenciar pedidos pendentes ({stats.pending})
               </Link>
-              <Link to="/admin/produtos" className="flex items-center gap-2 text-sm text-amber-700 hover:text-amber-800 font-medium">
-                🍽️ Gerenciar produtos
+              <Link to="/admin/produtos" className="block text-sm text-amber-700 hover:text-amber-800 font-medium">
+                Gerenciar produtos
               </Link>
-              <Link to="/admin/relatorios" className="flex items-center gap-2 text-sm text-amber-700 hover:text-amber-800 font-medium">
-                📈 Ver relatórios
+              <Link to="/admin/relatorios" className="block text-sm text-amber-700 hover:text-amber-800 font-medium">
+                Ver relatórios
               </Link>
             </div>
           </div>

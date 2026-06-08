@@ -17,6 +17,7 @@ import { ProductDetail } from './pages/ProductDetail';
 import { Orders } from './pages/Orders';
 import { OrderDetail } from './pages/OrderDetail';
 import { Fidelidade } from './pages/Fidelidade';
+import { Checkout } from './pages/Checkout';
 import { AdminLogin } from './pages/admin/AdminLogin';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { AdminProducts } from './pages/admin/AdminProducts';
@@ -33,6 +34,14 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/cart" element={<Cart />} />
+            <Route
+              path="/checkout"
+              element={
+                <ProtectedRoute>
+                  <Checkout />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<Register />} />
             <Route path="/recuperar-senha" element={<ForgotPassword />} />

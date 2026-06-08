@@ -9,11 +9,6 @@ import { useCart } from '../contexts/CartContext';
 import type { Category } from '../types';
 
 const categories: Category[] = ['Comidas Típicas', 'Bebidas Regionais', 'Doces'];
-const categoryEmojis: Record<Category, string> = {
-  'Comidas Típicas': '🍲',
-  'Bebidas Regionais': '🥤',
-  'Doces': '🍬',
-};
 
 export function Menu() {
   const { unitId } = useParams<{ unitId: string }>();
@@ -71,12 +66,11 @@ export function Menu() {
         <section className={`${unit.bgColor} border border-gray-200 rounded-2xl p-6`}>
           <div className="flex items-start justify-between flex-wrap gap-4">
             <div className="flex items-center gap-4">
-              <span className="text-5xl">{unit.emoji}</span>
               <div>
                 <h2 className="text-2xl font-bold text-gray-800">{unit.name}</h2>
                 <p className="text-amber-700 font-semibold">{unit.city} – {unit.state}</p>
-                <p className="text-sm text-gray-500 mt-1">📍 {unit.address}</p>
-                <p className="text-sm text-gray-500">📞 {unit.phone}</p>
+                <p className="text-sm text-gray-500 mt-1">{unit.address}</p>
+                <p className="text-sm text-gray-500">{unit.phone}</p>
               </div>
             </div>
             <Link
@@ -88,11 +82,11 @@ export function Menu() {
           </div>
         </section>
 
-        {/* Especiais de Temporada (visível só se existir E se categoria não filtrar todos para fora) */}
+        {/* Especiais de Temporada */}
         {seasonalProducts.length > 0 && (!activeCategory || seasonalFiltered.length > 0) && (
           <section className="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-6 text-white">
             <h3 className="text-xl font-bold mb-1">
-              🎉 {seasonalProducts[0].seasonal!.tag}
+              {seasonalProducts[0].seasonal!.tag}
             </h3>
             <p className="text-orange-100 text-sm mb-5">
               Disponíveis apenas nesta época — aproveite enquanto dura!
@@ -116,7 +110,7 @@ export function Menu() {
                   : 'bg-white text-gray-600 border-gray-200 hover:border-amber-400'
               }`}
             >
-              🏠 Todos
+              Todos
             </button>
             {categoriesInMenu.map(cat => (
               <button
@@ -128,7 +122,7 @@ export function Menu() {
                     : 'bg-white text-gray-600 border-gray-200 hover:border-amber-400'
                 }`}
               >
-                {categoryEmojis[cat]} {cat}
+                {cat}
               </button>
             ))}
           </div>
@@ -147,7 +141,6 @@ export function Menu() {
 
           {nonSeasonalFiltered.length === 0 ? (
             <div className="text-center py-16 text-gray-400">
-              <p className="text-5xl mb-3">🍽️</p>
               <p className="text-lg">Nenhum item nesta categoria</p>
             </div>
           ) : (

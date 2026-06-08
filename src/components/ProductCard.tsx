@@ -24,12 +24,12 @@ export function ProductCard({ product, showBadge = false, unitId }: ProductCardP
       <div className="absolute top-3 right-3 z-10 flex flex-col items-end gap-1">
         {(showBadge || product.featured) && (
           <span className="bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm">
-            ⭐ Destaque
+            Destaque
           </span>
         )}
         {product.seasonal && seasonalActive && (
           <span className={`${product.seasonal.tagColor} text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm`}>
-            🎉 {product.seasonal.tag}
+            {product.seasonal.tag}
           </span>
         )}
       </div>
@@ -37,7 +37,7 @@ export function ProductCard({ product, showBadge = false, unitId }: ProductCardP
       {/* Imagem clicável */}
       <Link to={detailUrl} className="block relative">
         <div className={`${product.bgColor} h-40 flex items-center justify-center`}>
-          <span className="text-6xl select-none">{product.emoji}</span>
+          <span className="text-3xl font-bold text-gray-500 select-none">{product.name.charAt(0)}</span>
         </div>
         {!isAvailable && (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">

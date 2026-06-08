@@ -8,7 +8,7 @@ export const rewards: Reward[] = [
     pointsCost: 100,
     type: 'discount',
     value: 5,
-    emoji: '🎫',
+    emoji: '',
   },
   {
     id: 'reward-02',
@@ -17,7 +17,7 @@ export const rewards: Reward[] = [
     pointsCost: 200,
     type: 'discount',
     value: 10,
-    emoji: '🏷️',
+    emoji: '',
   },
   {
     id: 'reward-03',
@@ -26,7 +26,7 @@ export const rewards: Reward[] = [
     pointsCost: 450,
     type: 'discount',
     value: 25,
-    emoji: '💰',
+    emoji: '',
   },
   {
     id: 'reward-04',
@@ -35,7 +35,7 @@ export const rewards: Reward[] = [
     pointsCost: 300,
     type: 'freeShipping',
     value: 15,
-    emoji: '🚚',
+    emoji: '',
   },
   {
     id: 'reward-05',
@@ -44,7 +44,7 @@ export const rewards: Reward[] = [
     pointsCost: 800,
     type: 'freeProduct',
     value: 20,
-    emoji: '🎁',
+    emoji: '',
   },
   {
     id: 'reward-06',
@@ -53,6 +53,6 @@ export const rewards: Reward[] = [
     pointsCost: 1500,
     type: 'freeProduct',
     value: 40,
-    emoji: '🌟',
+    emoji: '',
   },
 ];

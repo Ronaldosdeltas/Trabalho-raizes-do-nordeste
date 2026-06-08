@@ -32,7 +32,7 @@ const emptyForm = (): FormData => ({
   name: '',
   price: 0,
   category: 'Comidas Típicas',
-  emoji: '🍽️',
+  emoji: '',
   bgColor: 'bg-amber-100',
   featured: false,
   description: '',
@@ -148,7 +148,7 @@ export function AdminProducts() {
 
         {successMsg && (
           <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm">
-            ✅ {successMsg}
+            {successMsg}
           </div>
         )}
 
@@ -176,7 +176,7 @@ export function AdminProducts() {
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1">Emoji</label>
-                <input type="text" value={form.emoji} onChange={e => setF('emoji', e.target.value)} className={inputCls} placeholder="🍽️" />
+                <input type="text" value={form.emoji} onChange={e => setF('emoji', e.target.value)} className={inputCls} placeholder="" />
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1">Cor de fundo</label>
@@ -290,11 +290,11 @@ export function AdminProducts() {
                     <tr key={p.id} className={`hover:bg-gray-50 ${!p.available ? 'opacity-50' : ''}`}>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <span className="text-2xl">{p.emoji}</span>
+                          <span className="text-sm font-bold text-gray-400 w-8 text-center">{p.name.charAt(0)}</span>
                           <div>
                             <p className="text-sm font-semibold text-gray-800">{p.name}</p>
-                            {p.featured && <span className="text-xs text-amber-600">⭐ Destaque</span>}
-                            {p.seasonal && <span className="text-xs text-orange-500 ml-1">🎉 Sazonal</span>}
+                            {p.featured && <span className="text-xs text-amber-600">Destaque</span>}
+                            {p.seasonal && <span className="text-xs text-orange-500 ml-1">Sazonal</span>}
                           </div>
                         </div>
                       </td>
@@ -324,7 +324,7 @@ export function AdminProducts() {
                                     avail ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'
                                   }`}
                                 >
-                                  {u.emoji}
+                                  {u.city}
                                 </button>
                               );
                             })}

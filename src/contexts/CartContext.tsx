@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useMemo, type ReactNode } from 'react';
-import type { Product, CartItem, Coupon, Order } from '../types';
+import type { Product, CartItem, Coupon, Order, PaymentMethod } from '../types';
 import { coupons } from '../data/coupons';
 import { orderService } from '../services/orderService';
 import { loyaltyService } from '../services/loyaltyService';
@@ -22,7 +22,7 @@ interface CartContextType {
   applyCoupon: (code: string) => { success: boolean; error?: string };
   removeCoupon: () => void;
   validateCart: () => Product[];
-  checkout: (userId: string) => { success: boolean; orderId?: string };
+  checkout: (userId: string, paymentMethod?: PaymentMethod) => { success: boolean; orderId?: string };
 }
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -153,7 +153,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       .filter((p): p is Product => p !== undefined && !p.available);
   };
 
-  const checkout = (userId: string): { success: boolean; orderId?: string } => {
+  const checkout = (userId: string, paymentMethod?: PaymentMethod): { success: boolean; orderId?: string } => {
     if (items.length === 0) return { success: false };
 
     const order: Order = {
@@ -169,6 +169,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       discount,
       total,
       coupon: appliedCoupon ?? undefined,
+      paymentMethod,
       status: 'Pedido recebido',
       createdAt: new Date().toISOString(),
     };

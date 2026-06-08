@@ -3,10 +3,10 @@ import { useAdmin } from '../../contexts/AdminContext';
 import type { ReactNode } from 'react';
 
 const navItems = [
-  { to: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
-  { to: '/admin/produtos',  label: 'Produtos',   icon: '🍽️' },
-  { to: '/admin/pedidos',   label: 'Pedidos',    icon: '📦' },
-  { to: '/admin/relatorios', label: 'Relatórios', icon: '📈' },
+  { to: '/admin/dashboard', label: 'Dashboard' },
+  { to: '/admin/produtos',  label: 'Produtos'   },
+  { to: '/admin/pedidos',   label: 'Pedidos'    },
+  { to: '/admin/relatorios', label: 'Relatórios' },
 ];
 
 export function AdminLayout({ children }: { children: ReactNode }) {
@@ -28,7 +28,6 @@ export function AdminLayout({ children }: { children: ReactNode }) {
         {/* Brand */}
         <div className="px-5 py-5 border-b border-stone-700">
           <div className="flex items-center gap-2">
-            <span className="text-2xl">🌵</span>
             <div>
               <p className="font-bold text-sm leading-tight">Raízes do Nordeste</p>
               <p className="text-stone-400 text-xs">Área Administrativa</p>
@@ -50,7 +49,6 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                     : 'text-stone-300 hover:bg-stone-800 hover:text-white'
                 }`}
               >
-                <span>{item.icon}</span>
                 {item.label}
               </Link>
             );
@@ -68,7 +66,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
             onClick={handleLogout}
             className="mt-3 w-full text-xs text-stone-400 hover:text-white transition-colors text-left cursor-pointer"
           >
-            🚪 Sair
+            Sair
           </button>
         </div>
       </aside>

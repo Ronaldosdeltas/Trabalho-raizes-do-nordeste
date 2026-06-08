@@ -32,7 +32,7 @@ export function Home() {
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-10">
         {/* Banner de boas-vindas */}
         <section className="bg-gradient-to-r from-amber-700 to-amber-500 rounded-2xl p-8 text-white text-center shadow-lg">
-          <h2 className="text-3xl font-bold mb-2">🌵 Bem-vindo ao Raízes do Nordeste!</h2>
+          <h2 className="text-3xl font-bold mb-2">Bem-vindo ao Raízes do Nordeste!</h2>
           <p className="text-amber-100 text-lg mb-4">Produtos típicos direto do coração do sertão</p>
           <Link
             to="/cardapio"
@@ -68,7 +68,6 @@ export function Home() {
 
           {filteredProducts.length === 0 ? (
             <div className="text-center py-20 text-gray-400">
-              <p className="text-6xl mb-4">🔍</p>
               <p className="text-xl font-medium mb-1">Nenhum produto encontrado</p>
               <p className="text-sm">Tente buscar por outro nome ou categoria</p>
             </div>

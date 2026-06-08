@@ -26,7 +26,7 @@ const LEVEL_CONFIG: Record<LoyaltyLevel, LevelConfig> = {
     barColor: 'bg-amber-500',
     badgeBg: 'bg-amber-100',
     badgeText: 'text-amber-700',
-    emoji: '🥉',
+    emoji: '',
     multiplier: '1×',
     range: '0 – 999 pts',
     benefits: [
@@ -42,7 +42,7 @@ const LEVEL_CONFIG: Record<LoyaltyLevel, LevelConfig> = {
     barColor: 'bg-slate-400',
     badgeBg: 'bg-slate-100',
     badgeText: 'text-slate-700',
-    emoji: '🥈',
+    emoji: '',
     multiplier: '1,5×',
     range: '1.000 – 2.999 pts',
     benefits: [
@@ -59,7 +59,7 @@ const LEVEL_CONFIG: Record<LoyaltyLevel, LevelConfig> = {
     barColor: 'bg-yellow-400',
     badgeBg: 'bg-yellow-100',
     badgeText: 'text-yellow-700',
-    emoji: '🥇',
+    emoji: '',
     multiplier: '2×',
     range: '3.000+ pts',
     benefits: [
@@ -131,7 +131,6 @@ export function Fidelidade() {
         {birthdayBonusResult?.granted && (
           <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-2xl p-6 shadow-lg">
             <div className="flex items-start gap-4">
-              <span className="text-5xl flex-shrink-0">🎂</span>
               <div className="flex-1 min-w-0">
                 <h2 className="text-xl font-bold">Feliz Aniversário!</h2>
                 <p className="text-pink-100 mt-1">
@@ -150,7 +149,7 @@ export function Fidelidade() {
                         onClick={() => copyToClipboard(birthdayBonusResult.couponCode!)}
                         className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl text-sm font-semibold transition-colors cursor-pointer"
                       >
-                        {copiedCode === birthdayBonusResult.couponCode ? '✓ Copiado!' : 'Copiar'}
+                        {copiedCode === birthdayBonusResult.couponCode ? 'Copiado!' : 'Copiar'}
                       </button>
                     </div>
                     <p className="text-pink-200 text-xs mt-2">Válido por 7 dias. Use no carrinho!</p>
@@ -166,7 +165,6 @@ export function Fidelidade() {
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <span className="text-5xl">{cfg.emoji}</span>
                 <div>
                   <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">
                     Nível atual
@@ -200,7 +198,7 @@ export function Fidelidade() {
             <div className="mt-6">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-gray-600">
-                  Progresso para {nextLevelInfo.nextLevel} {nextCfg.emoji}
+                  Progresso para {nextLevelInfo.nextLevel}
                 </span>
                 <span className="text-sm text-gray-500">
                   Faltam {nextLevelInfo.pointsNeeded} pts
@@ -221,7 +219,7 @@ export function Fidelidade() {
 
           {level === 'Ouro' && (
             <div className="mt-4 flex items-center gap-2 text-yellow-700 bg-yellow-100 rounded-xl px-4 py-2 text-sm font-semibold">
-              <span>🏆</span> Você atingiu o nível máximo! Parabéns!
+              Você atingiu o nível máximo! Parabéns!
             </div>
           )}
 
@@ -233,7 +231,6 @@ export function Fidelidade() {
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-y-1 gap-x-4">
               {cfg.benefits.map(benefit => (
                 <li key={benefit} className="flex items-center gap-2 text-sm text-gray-600">
-                  <span className="text-green-500 font-bold">✓</span>
                   {benefit}
                 </li>
               ))}
@@ -249,15 +246,15 @@ export function Fidelidade() {
           </p>
 
           {redeemError && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm flex items-center gap-2 mb-4">
-              ⚠️ {redeemError}
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm mb-4">
+              {redeemError}
             </div>
           )}
 
           {redeemedInfo && (
             <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-4">
               <p className="font-semibold text-green-800">
-                ✅ {redeemedInfo.name} resgatado com sucesso!
+                {redeemedInfo.name} resgatado com sucesso!
               </p>
               <div className="flex items-center gap-3 mt-2 flex-wrap">
                 <span className="bg-green-100 border border-green-300 px-4 py-2 rounded-xl font-mono font-bold text-green-800 tracking-widest">
@@ -267,7 +264,7 @@ export function Fidelidade() {
                   onClick={() => copyToClipboard(redeemedInfo.code)}
                   className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-colors cursor-pointer"
                 >
-                  {copiedCode === redeemedInfo.code ? '✓ Copiado!' : 'Copiar código'}
+                  {copiedCode === redeemedInfo.code ? 'Copiado!' : 'Copiar código'}
                 </button>
               </div>
               <p className="text-green-600 text-xs mt-2">
@@ -291,8 +288,7 @@ export function Fidelidade() {
                   }`}
                 >
                   <div className="flex items-start justify-between">
-                    <span className="text-4xl">{reward.emoji}</span>
-                    <span
+                      <span
                       className={`text-sm font-bold px-3 py-1 rounded-full ${
                         canRedeem ? cfg.badgeBg + ' ' + cfg.badgeText : 'bg-gray-100 text-gray-400'
                       }`}
@@ -326,7 +322,6 @@ export function Fidelidade() {
           <h2 className="text-xl font-bold text-gray-800 mb-4">Histórico de Pontos</h2>
           {recentTransactions.length === 0 ? (
             <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center shadow-sm">
-              <span className="text-5xl block mb-3">📋</span>
               <p className="text-gray-500 font-medium">Nenhuma movimentação ainda.</p>
               <p className="text-sm text-gray-400 mt-1">
                 Faça um pedido para começar a acumular pontos!
@@ -429,7 +424,6 @@ export function Fidelidade() {
                   }`}
                 >
                   <div className="text-center mb-3">
-                    <span className="text-3xl sm:text-4xl block mb-1">{c.emoji}</span>
                     <h3 className={`font-bold text-base sm:text-lg ${c.color}`}>{lvl}</h3>
                     {isCurrent && (
                       <span className="inline-block text-xs bg-amber-600 text-white px-2 py-0.5 rounded-full font-medium mt-1">
@@ -441,9 +435,8 @@ export function Fidelidade() {
                   </div>
                   <ul className="space-y-1.5">
                     {c.benefits.map(b => (
-                      <li key={b} className="flex items-start gap-1.5 text-xs text-gray-600">
-                        <span className="text-green-500 font-bold mt-0.5 flex-shrink-0">✓</span>
-                        <span>{b}</span>
+                      <li key={b} className="text-xs text-gray-600">
+                        {b}
                       </li>
                     ))}
                   </ul>

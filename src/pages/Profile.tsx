@@ -94,8 +94,8 @@ export function Profile() {
 
           <div className="p-6 space-y-6">
             {successMsg && (
-              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
-                ✅ {successMsg}
+              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm">
+                {successMsg}
               </div>
             )}
 
@@ -118,8 +118,8 @@ export function Profile() {
                     <p className="text-xs text-gray-500 mb-1">Consentimento LGPD</p>
                     <p className="text-sm text-gray-700">
                       {storedUser.lgpdConsent
-                        ? `✅ Consentimento registrado em ${formatDate(storedUser.createdAt)}`
-                        : '⚠️ Consentimento não registrado'}
+                        ? `Consentimento registrado em ${formatDate(storedUser.createdAt)}`
+                        : 'Consentimento não registrado'}
                     </p>
                   </div>
                 )}
@@ -127,7 +127,7 @@ export function Profile() {
                   onClick={() => setIsEditing(true)}
                   className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 rounded-xl transition-colors cursor-pointer"
                 >
-                  ✏️ Editar Perfil
+                  Editar Perfil
                 </button>
               </div>
             ) : (
@@ -183,7 +183,7 @@ export function Profile() {
 
                 <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
                   <label className="block text-sm font-medium text-amber-800 mb-1">
-                    🔒 Senha atual (obrigatório para salvar)
+                    Senha atual (obrigatório para salvar)
                   </label>
                   <input
                     type="password"
@@ -197,8 +197,8 @@ export function Profile() {
                 </div>
 
                 {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
-                    ⚠️ {error}
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                    {error}
                   </div>
                 )}
 
@@ -224,15 +224,15 @@ export function Profile() {
             <div className="border-t border-gray-100 pt-6 space-y-3">
               <button
                 onClick={handleLogout}
-                className="w-full border border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold py-3 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2"
+                className="w-full border border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold py-3 rounded-xl transition-colors cursor-pointer"
               >
-                🚪 Sair da Conta
+                Sair da Conta
               </button>
               <button
                 onClick={() => setShowDeleteModal(true)}
-                className="w-full border border-red-200 text-red-500 hover:bg-red-50 font-semibold py-3 rounded-xl transition-colors text-sm cursor-pointer flex items-center justify-center gap-2"
+                className="w-full border border-red-200 text-red-500 hover:bg-red-50 font-semibold py-3 rounded-xl transition-colors text-sm cursor-pointer"
               >
-                🗑️ Solicitar Exclusão de Dados (LGPD)
+                Solicitar Exclusão de Dados (LGPD)
               </button>
             </div>
           </div>
@@ -244,7 +244,6 @@ export function Profile() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl">
             <div className="text-center mb-6">
-              <span className="text-5xl">⚠️</span>
               <h3 className="text-xl font-bold text-gray-800 mt-3">Excluir conta e dados</h3>
               <p className="text-gray-500 text-sm mt-3 leading-relaxed">
                 Conforme a <strong>LGPD (Lei nº 13.709/2018)</strong>, ao confirmar, todos os seus dados pessoais

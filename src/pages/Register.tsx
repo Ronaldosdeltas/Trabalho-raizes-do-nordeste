@@ -57,7 +57,6 @@ export function Register() {
     <div className="min-h-screen bg-amber-50 flex items-center justify-center px-4 py-8">
       <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
         <div className="text-center mb-8">
-          <span className="text-5xl">🌵</span>
           <h1 className="text-2xl font-bold text-amber-800 mt-2">Criar Conta</h1>
           <p className="text-gray-500 text-sm mt-1">Junte-se ao Raízes do Nordeste</p>
         </div>
@@ -73,7 +72,7 @@ export function Register() {
               className={inputClass}
               placeholder="João da Silva"
             />
-            {errors.name && <p className="text-red-500 text-xs mt-1">⚠️ {errors.name}</p>}
+            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
           </div>
 
           <div>
@@ -86,7 +85,7 @@ export function Register() {
               className={inputClass}
               placeholder="seu@email.com"
             />
-            {errors.email && <p className="text-red-500 text-xs mt-1">⚠️ {errors.email}</p>}
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
           </div>
 
           <div>
@@ -114,7 +113,7 @@ export function Register() {
               className={inputClass}
               placeholder="Mínimo 6 caracteres"
             />
-            {errors.password && <p className="text-red-500 text-xs mt-1">⚠️ {errors.password}</p>}
+            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
           </div>
 
           <div>
@@ -127,7 +126,7 @@ export function Register() {
               className={inputClass}
               placeholder="Repita a senha"
             />
-            {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">⚠️ {errors.confirmPassword}</p>}
+            {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
           </div>
 
           {/* LGPD Consent */}
@@ -145,12 +144,12 @@ export function Register() {
                 Meus dados serão utilizados exclusivamente para a prestação dos serviços desta plataforma.
               </span>
             </label>
-            {errors.lgpdConsent && <p className="text-red-500 text-xs mt-2">⚠️ {errors.lgpdConsent}</p>}
+            {errors.lgpdConsent && <p className="text-red-500 text-xs mt-2">{errors.lgpdConsent}</p>}
           </div>
 
           {serverError && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
-              <span>⚠️</span> {serverError}
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+              {serverError}
             </div>
           )}
 

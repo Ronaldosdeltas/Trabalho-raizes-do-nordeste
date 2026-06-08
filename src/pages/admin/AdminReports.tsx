@@ -129,7 +129,7 @@ export function AdminReports() {
             onClick={() => downloadCSV(filtered)}
             className="bg-stone-700 hover:bg-stone-800 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors cursor-pointer flex items-center gap-2"
           >
-            ⬇️ Exportar CSV
+            Exportar CSV
           </button>
         </div>
 
@@ -153,14 +153,13 @@ export function AdminReports() {
         {/* KPI cards */}
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
           {[
-            { label: 'Total de pedidos', value: stats.total, icon: '📦' },
-            { label: 'Retirados', value: stats.delivered, icon: '✅' },
-            { label: 'Receita', value: fmt(stats.revenue), icon: '💰' },
-            { label: 'Ticket médio', value: fmt(stats.avgTicket), icon: '🧾' },
-            { label: 'Cancelados', value: stats.cancelled, icon: '❌' },
+            { label: 'Total de pedidos', value: stats.total },
+            { label: 'Retirados', value: stats.delivered },
+            { label: 'Receita', value: fmt(stats.revenue) },
+            { label: 'Ticket médio', value: fmt(stats.avgTicket) },
+            { label: 'Cancelados', value: stats.cancelled },
           ].map(card => (
             <div key={card.label} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
-              <p className="text-xl mb-1">{card.icon}</p>
               <p className="text-2xl font-black text-gray-800">{card.value}</p>
               <p className="text-xs text-gray-500 mt-1">{card.label}</p>
             </div>
@@ -178,7 +177,7 @@ export function AdminReports() {
                 {topProducts.map((p, i) => (
                   <div key={p.name} className="flex items-center gap-3">
                     <span className="text-xs font-bold text-gray-400 w-4">{i + 1}</span>
-                    <span className="text-xl">{p.emoji}</span>
+                    <span className="text-sm font-bold text-gray-400">{p.name.charAt(0)}</span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-0.5">
                         <span className="text-sm font-medium text-gray-700 truncate">{p.name}</span>

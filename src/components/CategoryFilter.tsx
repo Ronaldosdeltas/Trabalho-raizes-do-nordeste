@@ -7,12 +7,6 @@ interface CategoryFilterProps {
 
 const categories: Category[] = ['Comidas Típicas', 'Bebidas Regionais', 'Doces'];
 
-const categoryEmojis: Record<Category, string> = {
-  'Comidas Típicas': '🍲',
-  'Bebidas Regionais': '🥤',
-  'Doces': '🍬',
-};
-
 export function CategoryFilter({ activeCategory, onSelect }: CategoryFilterProps) {
   const baseStyle = 'px-5 py-2 rounded-full font-medium text-sm transition-all duration-200 cursor-pointer border';
   const activeStyle = 'bg-amber-600 text-white border-amber-600 shadow-md';
@@ -24,7 +18,7 @@ export function CategoryFilter({ activeCategory, onSelect }: CategoryFilterProps
         onClick={() => onSelect(null)}
         className={`${baseStyle} ${activeCategory === null ? activeStyle : inactiveStyle}`}
       >
-        🏠 Todos
+        Todos
       </button>
       {categories.map(cat => (
         <button
@@ -32,7 +26,7 @@ export function CategoryFilter({ activeCategory, onSelect }: CategoryFilterProps
           onClick={() => onSelect(cat)}
           className={`${baseStyle} ${activeCategory === cat ? activeStyle : inactiveStyle}`}
         >
-          {categoryEmojis[cat]} {cat}
+          {cat}
         </button>
       ))}
     </div>

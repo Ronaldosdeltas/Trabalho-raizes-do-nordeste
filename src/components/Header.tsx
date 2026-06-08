@@ -10,7 +10,6 @@ export function Header() {
     <header className="bg-amber-700 text-white shadow-lg sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
         <Link to="/" className="flex items-center gap-3 flex-shrink-0">
-          <span className="text-3xl">🌵</span>
           <div>
             <h1 className="text-xl font-bold leading-tight">Raízes do Nordeste</h1>
             <p className="text-amber-200 text-xs">Sabores autênticos do sertão</p>
@@ -30,8 +29,8 @@ export function Header() {
               <Link to="/pedidos" className="text-amber-100 hover:text-white text-sm font-medium transition-colors">
                 Meus Pedidos
               </Link>
-              <Link to="/fidelidade" className="text-amber-100 hover:text-white text-sm font-medium transition-colors flex items-center gap-1">
-                <span>⭐</span> Fidelidade
+              <Link to="/fidelidade" className="text-amber-100 hover:text-white text-sm font-medium transition-colors">
+                Fidelidade
               </Link>
             </>
           )}

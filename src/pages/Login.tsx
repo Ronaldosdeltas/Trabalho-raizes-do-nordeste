@@ -29,7 +29,6 @@ export function Login() {
     <div className="min-h-screen bg-amber-50 flex items-center justify-center px-4">
       <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
         <div className="text-center mb-8">
-          <span className="text-5xl">🌵</span>
           <h1 className="text-2xl font-bold text-amber-800 mt-2">Raízes do Nordeste</h1>
           <p className="text-gray-500 text-sm mt-1">Entre na sua conta</p>
         </div>
@@ -62,8 +61,8 @@ export function Login() {
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
-              <span>⚠️</span> {error}
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+              {error}
             </div>
           )}
 

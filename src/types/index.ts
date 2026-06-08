@@ -1,5 +1,7 @@
 export type Category = 'Comidas Típicas' | 'Bebidas Regionais' | 'Doces';
 
+export type PaymentMethod = 'dinheiro' | 'credito' | 'debito' | 'pix' | 'raizes_card';
+
 export interface User {
   id: string;
   name: string;
@@ -57,6 +59,7 @@ export interface Unit {
   emoji: string;
   bgColor: string;
   products: UnitProduct[];
+  paymentMethods: PaymentMethod[];
 }
 
 export interface Coupon {
@@ -89,6 +92,7 @@ export interface Order {
   discount: number;
   total: number;
   coupon?: Coupon;
+  paymentMethod?: PaymentMethod;
   status: OrderStatus;
   createdAt: string;
 }

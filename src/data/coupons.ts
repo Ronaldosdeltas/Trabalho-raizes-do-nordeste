@@ -18,7 +18,7 @@ export const coupons: Coupon[] = [
     code: 'FEIRAJUNINA',
     type: 'percentage',
     value: 20,
-    description: '20% de desconto — Especial São João 🎉',
+    description: '20% de desconto — Especial São João',
   },
   {
     code: 'BEMVINDO5',

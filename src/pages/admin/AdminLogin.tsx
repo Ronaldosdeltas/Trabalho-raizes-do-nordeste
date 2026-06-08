@@ -26,7 +26,6 @@ export function AdminLogin() {
     <div className="min-h-screen bg-stone-900 flex items-center justify-center px-4">
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm">
         <div className="text-center mb-8">
-          <span className="text-5xl block mb-3">🌵</span>
           <h1 className="text-xl font-bold text-stone-800">Área Administrativa</h1>
           <p className="text-gray-500 text-sm mt-1">Raízes do Nordeste</p>
         </div>
@@ -60,7 +59,7 @@ export function AdminLogin() {
 
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
-              ⚠️ {error}
+              {error}
             </div>
           )}
 

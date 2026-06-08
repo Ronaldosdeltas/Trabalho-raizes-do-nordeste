@@ -12,7 +12,7 @@ export function Cart() {
     items, removeFromCart, updateQuantity,
     subtotal, discount, total,
     appliedCoupon, applyCoupon, removeCoupon,
-    totalItems, validateCart, checkout,
+    totalItems, validateCart,
   } = useCart();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
@@ -46,19 +46,13 @@ export function Cart() {
       setUnavailableItems(invalid);
       return;
     }
-    finalize();
-  };
-
-  const finalize = () => {
-    if (!currentUser) return;
-    const result = checkout(currentUser.userId);
-    if (result.success) navigate('/pedidos');
+    navigate('/checkout');
   };
 
   const removeUnavailableAndFinalize = () => {
     unavailableItems.forEach(p => removeFromCart(p.id));
     setUnavailableItems([]);
-    setTimeout(finalize, 50);
+    navigate('/checkout');
   };
 
   if (items.length === 0) {
@@ -66,7 +60,6 @@ export function Cart() {
       <div className="min-h-screen bg-gray-50">
         <Header />
         <main className="max-w-3xl mx-auto px-4 py-20 text-center">
-          <p className="text-7xl mb-4">🛒</p>
           <p className="text-xl text-gray-500 mb-6">Seu carrinho está vazio</p>
           <Link
             to="/"
@@ -85,7 +78,7 @@ export function Cart() {
 
       <main className="max-w-6xl mx-auto px-4 py-8">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">
-          🛒 Meu Carrinho{' '}
+          Meu Carrinho{' '}
           <span className="text-amber-600">({totalItems} {totalItems === 1 ? 'item' : 'itens'})</span>
         </h2>
 
@@ -99,7 +92,7 @@ export function Cart() {
               >
                 <Link to={`/produto/${item.product.id}`} className="shrink-0">
                   <div className={`${item.product.bgColor} w-16 h-16 rounded-xl flex items-center justify-center`}>
-                    <span className="text-3xl">{item.product.emoji}</span>
+                    <span className="text-xl font-bold text-gray-500">{item.product.name.charAt(0)}</span>
                   </div>
                 </Link>
 
@@ -184,7 +177,7 @@ export function Cart() {
                 <div className="bg-green-50 border border-green-200 rounded-xl p-3 flex items-start justify-between gap-2">
                   <div>
                     <p className="text-xs font-bold text-green-700 uppercase tracking-wide">
-                      🎟️ {appliedCoupon.code}
+                      {appliedCoupon.code}
                     </p>
                     <p className="text-xs text-green-600 mt-0.5">{appliedCoupon.description}</p>
                   </div>
@@ -213,8 +206,8 @@ export function Cart() {
                       Aplicar
                     </button>
                   </div>
-                  {couponError && <p className="text-red-500 text-xs">⚠️ {couponError}</p>}
-                  {couponSuccess && <p className="text-green-600 text-xs">✅ {couponSuccess}</p>}
+                  {couponError && <p className="text-red-500 text-xs">{couponError}</p>}
+                  {couponSuccess && <p className="text-green-600 text-xs">{couponSuccess}</p>}
                   <p className="text-xs text-gray-400">Experimente: NORDESTE10 · FEIRAJUNINA</p>
                 </form>
               )}
@@ -248,7 +241,6 @@ export function Cart() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl">
             <div className="text-center mb-5">
-              <span className="text-4xl">⚠️</span>
               <h3 className="text-xl font-bold text-gray-800 mt-2">Itens indisponíveis</h3>
               <p className="text-gray-500 text-sm mt-2">
                 Os itens abaixo não estão mais disponíveis e precisam ser removidos para continuar:
@@ -257,7 +249,6 @@ export function Cart() {
             <ul className="space-y-2 mb-6">
               {unavailableItems.map(p => (
                 <li key={p.id} className="flex items-center gap-3 bg-red-50 rounded-xl p-3">
-                  <span className="text-2xl">{p.emoji}</span>
                   <span className="font-semibold text-gray-800 text-sm">{p.name}</span>
                 </li>
               ))}

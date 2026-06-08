@@ -8,8 +8,9 @@ export const units: Unit[] = [
     state: 'CE',
     address: 'Rua do Mercado, 142 – Centro',
     phone: '(85) 99999-0001',
-    emoji: '🌊',
+    emoji: '',
     bgColor: 'bg-blue-50',
+    paymentMethods: ['dinheiro', 'credito', 'debito', 'pix', 'raizes_card'],
     products: [
       { productId: 1, available: true },   // Carne de Sol
       { productId: 2, available: true },   // Baião de Dois
@@ -41,8 +42,9 @@ export const units: Unit[] = [
     state: 'PE',
     address: 'Rua da Aurora, 78 – Boa Vista',
     phone: '(81) 99999-0002',
-    emoji: '⚓',
+    emoji: '',
     bgColor: 'bg-amber-50',
+    paymentMethods: ['dinheiro', 'credito', 'debito', 'pix'],
     products: [
       { productId: 1, available: true },   // Carne de Sol
       { productId: 2, available: true },   // Baião de Dois
@@ -70,8 +72,9 @@ export const units: Unit[] = [
     state: 'RN',
     address: 'Av. Praia de Ponta Negra, 330',
     phone: '(84) 99999-0003',
-    emoji: '🏖️',
+    emoji: '',
     bgColor: 'bg-sky-50',
+    paymentMethods: ['dinheiro', 'debito', 'pix'],
     products: [
       { productId: 3, available: true },   // Tapioca
       { productId: 6, available: true },   // Queijo Coalho

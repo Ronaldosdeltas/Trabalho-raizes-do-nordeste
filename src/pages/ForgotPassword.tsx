@@ -52,7 +52,6 @@ export function ForgotPassword() {
     <div className="min-h-screen bg-amber-50 flex items-center justify-center px-4">
       <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
         <div className="text-center mb-8">
-          <span className="text-5xl">🔑</span>
           <h1 className="text-2xl font-bold text-amber-800 mt-2">Recuperar Senha</h1>
         </div>
 
@@ -74,8 +73,8 @@ export function ForgotPassword() {
               />
             </div>
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
-                <span>⚠️</span> {error}
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                {error}
               </div>
             )}
             <button type="submit" className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 rounded-xl transition-colors cursor-pointer">
@@ -88,7 +87,7 @@ export function ForgotPassword() {
           <form onSubmit={handleResetSubmit} className="space-y-4">
             {/* Código simulado exibido na tela */}
             <div className="bg-amber-50 border-2 border-amber-300 rounded-xl p-5 text-center">
-              <p className="text-xs text-gray-500 mb-1">📧 Código enviado para <strong>{email}</strong> (simulado):</p>
+              <p className="text-xs text-gray-500 mb-1">Código enviado para <strong>{email}</strong> (simulado):</p>
               <p className="text-4xl font-bold text-amber-700 tracking-[0.3em] mt-2">{simulatedCode}</p>
               <p className="text-xs text-gray-400 mt-2">Válido por 15 minutos</p>
             </div>
@@ -133,8 +132,8 @@ export function ForgotPassword() {
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
-                <span>⚠️</span> {error}
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                {error}
               </div>
             )}
 
@@ -146,7 +145,6 @@ export function ForgotPassword() {
 
         {step === 'success' && (
           <div className="text-center space-y-4">
-            <div className="text-6xl">✅</div>
             <p className="text-xl font-bold text-green-700">Senha redefinida!</p>
             <p className="text-gray-500 text-sm">Você já pode entrar com sua nova senha.</p>
             <Link

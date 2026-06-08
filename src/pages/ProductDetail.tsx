@@ -19,7 +19,6 @@ export function ProductDetail() {
       <div className="min-h-screen bg-gray-50">
         <Header />
         <main className="max-w-2xl mx-auto px-4 py-20 text-center">
-          <p className="text-6xl mb-4">🔍</p>
           <p className="text-xl text-gray-500 mb-6">Produto não encontrado.</p>
           <Link to="/" className="text-amber-600 font-semibold hover:underline">
             ← Voltar ao início
@@ -60,18 +59,18 @@ export function ProductDetail() {
         <div className="bg-white rounded-2xl shadow-md overflow-hidden">
           {/* Imagem ampliada */}
           <div className={`${product.bgColor} h-64 flex items-center justify-center relative`}>
-            <span className="text-8xl select-none">{product.emoji}</span>
+            <span className="text-5xl font-bold text-gray-400 select-none">{product.name.charAt(0)}</span>
 
             {/* Badges sobre a imagem */}
             <div className="absolute top-4 right-4 flex flex-col items-end gap-2">
               {product.featured && (
                 <span className="bg-amber-500 text-white text-sm font-bold px-3 py-1 rounded-full shadow">
-                  ⭐ Destaque
+                  Destaque
                 </span>
               )}
               {product.seasonal && seasonalActive && (
                 <span className={`${product.seasonal.tagColor} text-white text-sm font-bold px-3 py-1 rounded-full shadow`}>
-                  🎉 {product.seasonal.tag}
+                  {product.seasonal.tag}
                 </span>
               )}
             </div>
@@ -122,7 +121,7 @@ export function ProductDetail() {
             {/* Unidade de referência */}
             {unit && (
               <p className="text-sm text-gray-500 bg-gray-50 rounded-xl px-4 py-2">
-                📍 Disponibilidade para: <strong>{unit.name} — {unit.city}/{unit.state}</strong>
+                Disponibilidade para: <strong>{unit.name} — {unit.city}/{unit.state}</strong>
               </p>
             )}
 
@@ -159,7 +158,7 @@ export function ProductDetail() {
                   : 'bg-gray-200 text-gray-400 cursor-not-allowed'
               }`}
             >
-              {isAvailable ? '🛒 Adicionar ao Carrinho' : 'Produto Indisponível'}
+              {isAvailable ? 'Adicionar ao Carrinho' : 'Produto Indisponível'}
             </button>
           </div>
         </div>

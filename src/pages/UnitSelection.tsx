@@ -31,14 +31,8 @@ export function UnitSelection() {
               </div>
 
               <div className="space-y-1 text-sm text-gray-600">
-                <p className="flex items-start gap-2">
-                  <span className="text-base">📍</span>
-                  {unit.address}
-                </p>
-                <p className="flex items-center gap-2">
-                  <span className="text-base">📞</span>
-                  {unit.phone}
-                </p>
+                <p>{unit.address}</p>
+                <p>{unit.phone}</p>
               </div>
 
               <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-200">

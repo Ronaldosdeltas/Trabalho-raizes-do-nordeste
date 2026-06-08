@@ -97,7 +97,6 @@ export function AdminOrders() {
         {/* Orders */}
         {visibleOrders.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center text-gray-400">
-            <p className="text-4xl mb-2">📦</p>
             <p>Nenhum pedido encontrado.</p>
           </div>
         ) : (
@@ -141,7 +140,7 @@ export function AdminOrders() {
                         <ul className="space-y-1">
                           {order.items.map(item => (
                             <li key={item.product.id} className="flex items-center justify-between text-sm">
-                              <span>{item.product.emoji} {item.quantity}× {item.product.name}</span>
+                              <span>{item.quantity}× {item.product.name}</span>
                               <span className="text-gray-600">{fmt(item.unitPrice * item.quantity)}</span>
                             </li>
                           ))}
