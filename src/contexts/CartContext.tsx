@@ -8,8 +8,10 @@ import { productService } from '../services/productService';
 interface CartContextType {
   items: CartItem[];
   currentUnitId: string | null;
+  cartUnitId: string | null;
   setCurrentUnit: (unitId: string | null) => void;
-  addToCart: (product: Product) => void;
+  addToCart: (product: Product) => { success: boolean; conflict?: boolean };
+  clearCartAndAdd: (product: Product) => void;
   addMultipleToCart: (newItems: { product: Product; quantity: number }[]) => void;
   removeFromCart: (productId: number) => void;
   updateQuantity: (productId: number, delta: number) => void;
@@ -31,10 +33,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
   const [currentUnitId, setCurrentUnitId] = useState<string | null>(null);
+  const [cartUnitId, setCartUnitId] = useState<string | null>(null);
 
   const setCurrentUnit = (unitId: string | null) => setCurrentUnitId(unitId);
 
-  const addToCart = (product: Product) => {
+  const addToCart = (product: Product): { success: boolean; conflict?: boolean } => {
+    // Block mixing products from different units when both sides have a known unit
+    if (items.length > 0 && currentUnitId !== null && cartUnitId !== null && currentUnitId !== cartUnitId) {
+      return { success: false, conflict: true };
+    }
     setItems(prev => {
       const existing = prev.find(item => item.product.id === product.id);
       if (existing) {
@@ -46,6 +53,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
       return [...prev, { product, quantity: 1 }];
     });
+    if (items.length === 0 && currentUnitId !== null) {
+      setCartUnitId(currentUnitId);
+    }
+    return { success: true };
+  };
+
+  const clearCartAndAdd = (product: Product) => {
+    setItems([{ product, quantity: 1 }]);
+    setAppliedCoupon(null);
+    setCartUnitId(currentUnitId);
   };
 
   const addMultipleToCart = (newItems: { product: Product; quantity: number }[]) => {
@@ -82,6 +99,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const clearCart = () => {
     setItems([]);
     setAppliedCoupon(null);
+    setCartUnitId(null);
   };
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
@@ -191,8 +209,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   return (
     <CartContext.Provider
       value={{
-        items, currentUnitId, setCurrentUnit,
-        addToCart, addMultipleToCart, removeFromCart, updateQuantity, clearCart,
+        items, currentUnitId, cartUnitId, setCurrentUnit,
+        addToCart, clearCartAndAdd, addMultipleToCart, removeFromCart, updateQuantity, clearCart,
         totalItems, subtotal, discount, total,
         appliedCoupon, applyCoupon, removeCoupon,
         validateCart, checkout,

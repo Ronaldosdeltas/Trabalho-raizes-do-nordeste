@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Product } from '../types';
 import { useCart } from '../contexts/CartContext';
@@ -10,7 +11,8 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, showBadge = false, unitId }: ProductCardProps) {
-  const { addToCart } = useCart();
+  const { addToCart, clearCartAndAdd } = useCart();
+  const [showConflictModal, setShowConflictModal] = useState(false);
   const isAvailable = product.available;
   const seasonalActive = product.seasonal ? isSeasonalActive(product.seasonal) : false;
 
@@ -57,7 +59,10 @@ export function ProductCard({ product, showBadge = false, unitId }: ProductCardP
           R$ {product.price.toFixed(2).replace('.', ',')}
         </p>
         <button
-          onClick={() => addToCart(product)}
+          onClick={() => {
+            const result = addToCart(product);
+            if (result.conflict) setShowConflictModal(true);
+          }}
           disabled={!isAvailable}
           className={`mt-auto font-semibold py-2 px-4 rounded-xl transition-colors duration-200 text-sm ${
             isAvailable
@@ -68,6 +73,34 @@ export function ProductCard({ product, showBadge = false, unitId }: ProductCardP
           {isAvailable ? 'Adicionar ao Carrinho' : 'Indisponível'}
         </button>
       </div>
+
+      {showConflictModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6">
+            <h2 className="font-bold text-gray-800 text-lg mb-2">Carrinho de outra unidade</h2>
+            <p className="text-gray-600 text-sm mb-5">
+              Seu carrinho contém itens de outra unidade. Deseja limpar o carrinho e adicionar este produto?
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowConflictModal(false)}
+                className="flex-1 py-2 rounded-xl border border-gray-300 text-gray-700 font-semibold text-sm hover:bg-gray-50 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  clearCartAndAdd(product);
+                  setShowConflictModal(false);
+                }}
+                className="flex-1 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-sm transition-colors"
+              >
+                Limpar e adicionar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
