@@ -20,7 +20,7 @@ const GATEWAY_ERRORS = [
 
 // Simulates a real external payment gateway with network delay and realistic failure rate
 export const paymentService = {
-  async processPayment(request: GatewayRequest): Promise<GatewayResponse> {
+  async processPayment(_request: GatewayRequest): Promise<GatewayResponse> {
     // Simulate network round-trip (1.5s – 2.5s)
     const delay = 1500 + Math.random() * 1000;
     await new Promise(resolve => setTimeout(resolve, delay));

@@ -36,7 +36,6 @@ export function ProductDetail() {
 
   const seasonalActive = product.seasonal ? isSeasonalActive(product.seasonal) : false;
 
-  const backUrl = unit ? `/cardapio/${unit.id}` : '/';
   const backLabel = unit ? `← ${unit.name}` : '← Início';
 
   const fmt = (price: number) => `R$ ${price.toFixed(2).replace('.', ',')}`;
