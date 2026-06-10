@@ -68,6 +68,7 @@ export function Checkout() {
   const [step, setStep] = useState<Step>('review');
   const [selectedPayment, setSelectedPayment] = useState<PaymentMethod | null>(null);
   const [confirmedOrderId, setConfirmedOrderId] = useState<string | null>(null);
+  const [confirmedTotal, setConfirmedTotal] = useState<number>(0);
   const [transactionId, setTransactionId] = useState<string>('');
   const [gatewayError, setGatewayError] = useState<string>('');
 
@@ -103,9 +104,11 @@ export function Checkout() {
     });
 
     if (result.success) {
+      const totalBeforeCheckout = total;
       const checkoutResult = checkout(currentUser.userId, selectedPayment);
       if (checkoutResult.success && checkoutResult.orderId) {
         setConfirmedOrderId(checkoutResult.orderId);
+        setConfirmedTotal(totalBeforeCheckout);
         setTransactionId(result.transactionId ?? '');
         setStep('success');
       } else {
@@ -172,7 +175,7 @@ export function Checkout() {
                 )}
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Total pago</span>
-                  <span className="font-bold text-gray-800">{fmt(total)}</span>
+                  <span className="font-bold text-gray-800">{fmt(confirmedTotal)}</span>
                 </div>
                 {unit && (
                   <div className="flex justify-between text-sm">
