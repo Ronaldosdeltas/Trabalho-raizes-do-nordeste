@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Header } from '../components/Header';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
+import { units } from '../data/units';
 import type { Product } from '../types';
 
 const fmt = (value: number) => `R$ ${value.toFixed(2).replace('.', ',')}`;
@@ -12,7 +13,7 @@ export function Cart() {
     items, removeFromCart, updateQuantity,
     subtotal, discount, total,
     appliedCoupon, applyCoupon, removeCoupon,
-    totalItems, validateCart,
+    totalItems, validateCart, currentUnitId, setCurrentUnit,
   } = useCart();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export function Cart() {
   const [couponError, setCouponError] = useState('');
   const [couponSuccess, setCouponSuccess] = useState('');
   const [unavailableItems, setUnavailableItems] = useState<Product[]>([]);
+  const [unitError, setUnitError] = useState(false);
 
   const handleApplyCoupon = (e: FormEvent) => {
     e.preventDefault();
@@ -41,6 +43,10 @@ export function Cart() {
       navigate('/login');
       return;
     }
+    if (!currentUnitId) {
+      setUnitError(true);
+      return;
+    }
     const invalid = validateCart();
     if (invalid.length > 0) {
       setUnavailableItems(invalid);
@@ -53,6 +59,14 @@ export function Cart() {
     unavailableItems.forEach(p => removeFromCart(p.id));
     setUnavailableItems([]);
     navigate('/checkout');
+  };
+
+  const selectedUnit = currentUnitId ? units.find(u => u.id === currentUnitId) ?? null : null;
+
+  const isUnavailableForUnit = (productId: number): boolean => {
+    if (!selectedUnit) return false;
+    const entry = selectedUnit.products.find(p => p.productId === productId);
+    return !entry || !entry.available;
   };
 
   if (items.length === 0) {
@@ -85,62 +99,85 @@ export function Cart() {
         <div className="flex flex-col lg:flex-row gap-6">
           {/* ── Lista de itens ─────────────────────────────────── */}
           <div className="flex-1 space-y-3">
-            {items.map(item => (
-              <div
-                key={item.product.id}
-                className="bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm border border-gray-100"
-              >
-                <Link to={`/produto/${item.product.id}`} className="shrink-0">
-                  <div className={`${item.product.bgColor} w-16 h-16 rounded-xl flex items-center justify-center`}>
-                    <span className="text-xl font-bold text-gray-500">{item.product.name.charAt(0)}</span>
+            {items.map(item => {
+              const unavailable = isUnavailableForUnit(item.product.id);
+              return (
+                <div key={item.product.id} className="space-y-0">
+                  <div
+                    className={`bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm border transition-colors
+                      ${unavailable ? 'border-orange-200 bg-orange-50/40' : 'border-gray-100'}`}
+                  >
+                    <Link to={`/produto/${item.product.id}`} className="shrink-0">
+                      <div className={`${item.product.bgColor} w-16 h-16 rounded-xl flex items-center justify-center
+                        ${unavailable ? 'grayscale opacity-50' : ''}`}>
+                        <span className="text-xl font-bold text-gray-500">{item.product.name.charAt(0)}</span>
+                      </div>
+                    </Link>
+
+                    <div className="flex-1 min-w-0">
+                      <p className={`font-semibold truncate ${unavailable ? 'text-gray-400' : 'text-gray-800'}`}>
+                        {item.product.name}
+                      </p>
+                      <p className={`text-xs mb-1 ${unavailable ? 'text-gray-400' : 'text-amber-600'}`}>
+                        {item.product.category}
+                      </p>
+                      <p className="text-gray-400 text-sm">{fmt(item.product.price)} / un</p>
+                    </div>
+
+                    {/* Controles de quantidade */}
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        onClick={() => updateQuantity(item.product.id, -1)}
+                        className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer font-bold"
+                        aria-label="Diminuir quantidade"
+                      >
+                        −
+                      </button>
+                      <span className="w-8 text-center font-semibold text-gray-800">
+                        {item.quantity}
+                      </span>
+                      <button
+                        onClick={() => updateQuantity(item.product.id, +1)}
+                        className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer font-bold"
+                        aria-label="Aumentar quantidade"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    {/* Subtotal do item */}
+                    <p className={`w-20 text-right font-bold shrink-0 ${unavailable ? 'text-gray-400 line-through' : 'text-amber-700'}`}>
+                      {fmt(item.product.price * item.quantity)}
+                    </p>
+
+                    {/* Remover */}
+                    <button
+                      onClick={() => removeFromCart(item.product.id)}
+                      className="shrink-0 text-gray-400 hover:text-red-500 transition-colors cursor-pointer p-1"
+                      aria-label="Remover item"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
                   </div>
-                </Link>
 
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-gray-800 truncate">{item.product.name}</p>
-                  <p className="text-xs text-amber-600 mb-1">{item.product.category}</p>
-                  <p className="text-gray-500 text-sm">{fmt(item.product.price)} / un</p>
+                  {unavailable && (
+                    <div className="flex items-center gap-2 px-4 py-2 bg-orange-50 border border-orange-200 border-t-0 rounded-b-2xl">
+                      <svg className="w-4 h-4 text-orange-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                          d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                      </svg>
+                      <p className="text-xs text-orange-700 font-medium">
+                        Item indisponível para esta unidade no momento.
+                        {' '}<button onClick={() => removeFromCart(item.product.id)} className="underline hover:text-orange-900 cursor-pointer">Remover</button>
+                      </p>
+                    </div>
+                  )}
                 </div>
-
-                {/* Controles de quantidade */}
-                <div className="flex items-center gap-2 shrink-0">
-                  <button
-                    onClick={() => updateQuantity(item.product.id, -1)}
-                    className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer font-bold"
-                    aria-label="Diminuir quantidade"
-                  >
-                    −
-                  </button>
-                  <span className="w-8 text-center font-semibold text-gray-800">
-                    {item.quantity}
-                  </span>
-                  <button
-                    onClick={() => updateQuantity(item.product.id, +1)}
-                    className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer font-bold"
-                    aria-label="Aumentar quantidade"
-                  >
-                    +
-                  </button>
-                </div>
-
-                {/* Subtotal do item */}
-                <p className="w-20 text-right font-bold text-amber-700 shrink-0">
-                  {fmt(item.product.price * item.quantity)}
-                </p>
-
-                {/* Remover */}
-                <button
-                  onClick={() => removeFromCart(item.product.id)}
-                  className="shrink-0 text-gray-400 hover:text-red-500 transition-colors cursor-pointer p-1"
-                  aria-label="Remover item"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-              </div>
-            ))}
+              );
+            })}
 
             <Link
               to="/"
@@ -211,6 +248,32 @@ export function Cart() {
                   <p className="text-xs text-gray-400">Experimente: NORDESTE10 · FEIRAJUNINA</p>
                 </form>
               )}
+
+              {/* Seletor de unidade */}
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">
+                  Unidade de retirada <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={currentUnitId ?? ''}
+                  onChange={e => {
+                    setCurrentUnit(e.target.value || null);
+                    setUnitError(false);
+                  }}
+                  className={`w-full px-3 py-2 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white
+                    ${unitError ? 'border-red-400 ring-2 ring-red-200' : 'border-gray-200'}`}
+                >
+                  <option value="">Selecione uma unidade…</option>
+                  {units.map(u => (
+                    <option key={u.id} value={u.id}>
+                      {u.name} — {u.city}/{u.state}
+                    </option>
+                  ))}
+                </select>
+                {unitError && (
+                  <p className="text-red-500 text-xs">Selecione uma unidade para continuar.</p>
+                )}
+              </div>
 
               {/* Finalizar */}
               {currentUser ? (
