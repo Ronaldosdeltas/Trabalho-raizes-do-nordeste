@@ -5,6 +5,7 @@ import { LoyaltyProvider } from './contexts/LoyaltyContext';
 import { AdminProvider } from './contexts/AdminContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AdminProtectedRoute } from './components/admin/AdminProtectedRoute';
+import { CustomerLayout } from './components/CustomerLayout';
 import { Home } from './pages/Home';
 import { Cart } from './pages/Cart';
 import { Login } from './pages/Login';
@@ -32,54 +33,56 @@ function App() {
         <LoyaltyProvider>
         <CartProvider>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route
-              path="/checkout"
-              element={
-                <ProtectedRoute>
-                  <Checkout />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/login" element={<Login />} />
-            <Route path="/cadastro" element={<Register />} />
-            <Route path="/recuperar-senha" element={<ForgotPassword />} />
-            <Route path="/cardapio" element={<UnitSelection />} />
-            <Route path="/cardapio/:unitId" element={<Menu />} />
-            <Route path="/produto/:productId" element={<ProductDetail />} />
-            <Route
-              path="/perfil"
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/pedidos"
-              element={
-                <ProtectedRoute>
-                  <Orders />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/pedidos/:orderId"
-              element={
-                <ProtectedRoute>
-                  <OrderDetail />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/fidelidade"
-              element={
-                <ProtectedRoute>
-                  <Fidelidade />
-                </ProtectedRoute>
-              }
-            />
+            <Route element={<CustomerLayout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route
+                path="/checkout"
+                element={
+                  <ProtectedRoute>
+                    <Checkout />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/login" element={<Login />} />
+              <Route path="/cadastro" element={<Register />} />
+              <Route path="/recuperar-senha" element={<ForgotPassword />} />
+              <Route path="/cardapio" element={<UnitSelection />} />
+              <Route path="/cardapio/:unitId" element={<Menu />} />
+              <Route path="/produto/:productId" element={<ProductDetail />} />
+              <Route
+                path="/perfil"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/pedidos"
+                element={
+                  <ProtectedRoute>
+                    <Orders />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/pedidos/:orderId"
+                element={
+                  <ProtectedRoute>
+                    <OrderDetail />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/fidelidade"
+                element={
+                  <ProtectedRoute>
+                    <Fidelidade />
+                  </ProtectedRoute>
+                }
+              />
+            </Route>
 
             {/* Admin routes */}
             <Route path="/admin/login" element={<AdminLogin />} />

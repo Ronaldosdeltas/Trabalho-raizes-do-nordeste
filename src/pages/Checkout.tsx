@@ -7,7 +7,28 @@ import { paymentService } from '../services/paymentService';
 import { units } from '../data/units';
 import type { PaymentMethod } from '../types';
 
-type Step = 'review' | 'payment' | 'processing' | 'success' | 'error';
+type Step = 'review' | 'payment' | 'card' | 'processing' | 'success' | 'error';
+
+function luhn(num: string): boolean {
+  const digits = num.replace(/\D/g, '');
+  let sum = 0, alt = false;
+  for (let i = digits.length - 1; i >= 0; i--) {
+    let n = parseInt(digits[i], 10);
+    if (alt) { n *= 2; if (n > 9) n -= 9; }
+    sum += n;
+    alt = !alt;
+  }
+  return sum % 10 === 0;
+}
+
+function fmtCardNumber(v: string): string {
+  return v.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
+}
+
+function fmtExpiry(v: string): string {
+  const d = v.replace(/\D/g, '').slice(0, 4);
+  return d.length >= 2 ? d.slice(0, 2) + '/' + d.slice(2) : d;
+}
 
 const fmt = (v: number) => `R$ ${v.toFixed(2).replace('.', ',')}`;
 
@@ -19,15 +40,15 @@ const PAYMENT_INFO: Record<PaymentMethod, { label: string; icon: string; descrip
   raizes_card: { label: 'Raízes Card',        icon: '', description: 'Cartão fidelidade Raízes do Nordeste' },
 };
 
-const STEP_LABELS: Record<Exclude<Step, 'processing' | 'error'>, string> = {
+const STEP_LABELS: Record<Exclude<Step, 'processing' | 'card' | 'error'>, string> = {
   review:  'Revisão',
   payment: 'Pagamento',
   success: 'Confirmação',
 };
 
 function StepIndicator({ step }: { step: Step }) {
-  const steps: Array<Exclude<Step, 'processing' | 'error'>> = ['review', 'payment', 'success'];
-  const current = step === 'processing' ? 'payment' : step === 'error' ? 'payment' : step;
+  const steps: Array<Exclude<Step, 'processing' | 'card' | 'error'>> = ['review', 'payment', 'success'];
+  const current = step === 'processing' || step === 'card' ? 'payment' : step === 'error' ? 'payment' : step;
   const currentIdx = steps.indexOf(current);
 
   return (
@@ -48,7 +69,7 @@ function StepIndicator({ step }: { step: Step }) {
               )}
             </div>
             <span className={`text-xs mt-1 font-medium ${i === currentIdx ? 'text-amber-700' : 'text-gray-400'}`}>
-              {STEP_LABELS[s]}
+              {STEP_LABELS[s as keyof typeof STEP_LABELS]}
             </span>
           </div>
           {i < steps.length - 1 && (
@@ -71,6 +92,11 @@ export function Checkout() {
   const [confirmedTotal, setConfirmedTotal] = useState<number>(0);
   const [transactionId, setTransactionId] = useState<string>('');
   const [gatewayError, setGatewayError] = useState<string>('');
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardHolder, setCardHolder] = useState('');
+  const [cardExpiry, setCardExpiry] = useState('');
+  const [cardCvv, setCardCvv] = useState('');
+  const [cardErrors, setCardErrors] = useState<Record<string, string>>({});
 
   const unit = currentUnitId ? units.find(u => u.id === currentUnitId) ?? null : null;
 
@@ -122,7 +148,62 @@ export function Checkout() {
   };
 
   const handleCancel = () => navigate('/cart');
-  const handleRetry = () => { setGatewayError(''); setStep('payment'); };
+  const handleRetry = () => {
+    setGatewayError('');
+    setStep(selectedPayment === 'credito' || selectedPayment === 'debito' ? 'card' : 'payment');
+  };
+
+  const validateCard = (): boolean => {
+    const errors: Record<string, string> = {};
+    const clean = cardNumber.replace(/\s/g, '');
+    if (clean.length !== 16) {
+      errors.number = 'Número deve ter 16 dígitos';
+    } else if (!luhn(clean)) {
+      errors.number = 'Número de cartão inválido';
+    }
+    if (!cardHolder.trim()) errors.holder = 'Nome é obrigatório';
+    const expiryMatch = cardExpiry.match(/^(\d{2})\/(\d{2})$/);
+    if (!expiryMatch) {
+      errors.expiry = 'Validade inválida (MM/AA)';
+    } else {
+      const month = parseInt(expiryMatch[1]);
+      const year = parseInt('20' + expiryMatch[2]);
+      const now = new Date();
+      if (month < 1 || month > 12) errors.expiry = 'Mês inválido';
+      else if (year < now.getFullYear() || (year === now.getFullYear() && month < now.getMonth() + 1))
+        errors.expiry = 'Cartão expirado';
+    }
+    if (cardCvv.length < 3) errors.cvv = 'CVV inválido';
+    setCardErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleCardPayment = async () => {
+    if (!validateCard() || !selectedPayment || !currentUser) return;
+    setStep('processing');
+    const result = await paymentService.processPayment({
+      orderId: crypto.randomUUID(),
+      amount: total,
+      paymentMethod: selectedPayment,
+      cardData: { number: cardNumber.replace(/\s/g, ''), holderName: cardHolder, expiry: cardExpiry, cvv: cardCvv },
+    });
+    if (result.success) {
+      const totalBeforeCheckout = total;
+      const checkoutResult = checkout(currentUser.userId, selectedPayment);
+      if (checkoutResult.success && checkoutResult.orderId) {
+        setConfirmedOrderId(checkoutResult.orderId);
+        setConfirmedTotal(totalBeforeCheckout);
+        setTransactionId(result.transactionId ?? '');
+        setStep('success');
+      } else {
+        setGatewayError('Erro interno ao registrar o pedido. Tente novamente.');
+        setStep('error');
+      }
+    } else {
+      setGatewayError(result.errorMessage ?? 'Pagamento recusado pelo gateway. Tente novamente ou escolha outra forma de pagamento.');
+      setStep('error');
+    }
+  };
 
   // ── Rendering ──────────────────────────────────────────────
   return (
@@ -388,11 +469,20 @@ export function Checkout() {
 
             <div className="flex flex-col gap-3">
               <button
-                onClick={handleProcessPayment}
+                onClick={() => {
+                  if (selectedPayment === 'credito' || selectedPayment === 'debito') {
+                    setStep('card');
+                  } else {
+                    handleProcessPayment();
+                  }
+                }}
                 disabled={!selectedPayment}
                 className="w-full bg-amber-600 hover:bg-amber-700 disabled:bg-gray-200 disabled:text-gray-400 text-white font-bold py-3 rounded-xl transition-colors cursor-pointer disabled:cursor-not-allowed"
               >
-                Confirmar pagamento {selectedPayment ? `(${PAYMENT_INFO[selectedPayment].label})` : ''}
+                {selectedPayment === 'credito' || selectedPayment === 'debito'
+                  ? `Inserir dados do ${PAYMENT_INFO[selectedPayment].label} →`
+                  : `Confirmar pagamento ${selectedPayment ? `(${PAYMENT_INFO[selectedPayment].label})` : ''}`
+                }
               </button>
               <button
                 onClick={() => setStep('review')}
@@ -405,6 +495,102 @@ export function Checkout() {
                 className="w-full text-gray-400 hover:text-gray-600 font-medium py-2 transition-colors cursor-pointer text-sm"
               >
                 Cancelar e voltar ao carrinho
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* ── Card data step ─────────────────────────────────── */}
+        {step === 'card' && (
+          <>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Dados do cartão</h2>
+            <StepIndicator step={step} />
+
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-4">
+              <div className="text-sm text-gray-500 mb-1">Total a pagar</div>
+              <p className="text-3xl font-bold text-amber-700">{fmt(total)}</p>
+              {selectedPayment && (
+                <p className="text-xs text-gray-400 mt-1">{PAYMENT_INFO[selectedPayment].label}</p>
+              )}
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-4 space-y-4">
+              <h3 className="font-bold text-gray-700">Informações do cartão</h3>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Número do cartão</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="0000 0000 0000 0000"
+                  value={cardNumber}
+                  onChange={e => setCardNumber(fmtCardNumber(e.target.value))}
+                  maxLength={19}
+                  className={`w-full border rounded-xl px-4 py-3 text-lg font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-amber-400 transition-colors ${cardErrors.number ? 'border-red-400 bg-red-50' : 'border-gray-200'}`}
+                />
+                {cardErrors.number && <p className="text-red-500 text-xs mt-1">{cardErrors.number}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Nome no cartão</label>
+                <input
+                  type="text"
+                  placeholder="Como aparece no cartão"
+                  value={cardHolder}
+                  onChange={e => setCardHolder(e.target.value.toUpperCase())}
+                  className={`w-full border rounded-xl px-4 py-3 uppercase focus:outline-none focus:ring-2 focus:ring-amber-400 transition-colors ${cardErrors.holder ? 'border-red-400 bg-red-50' : 'border-gray-200'}`}
+                />
+                {cardErrors.holder && <p className="text-red-500 text-xs mt-1">{cardErrors.holder}</p>}
+              </div>
+
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Validade</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="MM/AA"
+                    value={cardExpiry}
+                    onChange={e => setCardExpiry(fmtExpiry(e.target.value))}
+                    maxLength={5}
+                    className={`w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400 transition-colors ${cardErrors.expiry ? 'border-red-400 bg-red-50' : 'border-gray-200'}`}
+                  />
+                  {cardErrors.expiry && <p className="text-red-500 text-xs mt-1">{cardErrors.expiry}</p>}
+                </div>
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-600 mb-1">CVV</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="000"
+                    value={cardCvv}
+                    onChange={e => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                    maxLength={4}
+                    className={`w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400 transition-colors ${cardErrors.cvv ? 'border-red-400 bg-red-50' : 'border-gray-200'}`}
+                  />
+                  {cardErrors.cvv && <p className="text-red-500 text-xs mt-1">{cardErrors.cvv}</p>}
+                </div>
+              </div>
+
+              <div className="bg-blue-50 rounded-xl p-3 text-xs text-blue-700 space-y-0.5">
+                <p className="font-semibold mb-1">Cartões para teste:</p>
+                <p>✓ Aprovado: <span className="font-mono">4111 1111 1111 1111</span></p>
+                <p>✗ Recusado: <span className="font-mono">4000 0000 0000 0002</span></p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={handleCardPayment}
+                className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-xl transition-colors cursor-pointer"
+              >
+                Confirmar pagamento
+              </button>
+              <button
+                onClick={() => setStep('payment')}
+                className="w-full border border-gray-200 hover:bg-gray-50 text-gray-600 font-semibold py-3 rounded-xl transition-colors cursor-pointer"
+              >
+                ← Trocar forma de pagamento
               </button>
             </div>
           </>
