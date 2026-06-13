@@ -23,7 +23,6 @@ export function Menu() {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     setCurrentUnit(unit.id);
-    return () => setCurrentUnit(null);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unit.id]);
 
