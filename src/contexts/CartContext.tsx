@@ -1,9 +1,32 @@
-import { createContext, useContext, useState, useMemo, type ReactNode } from 'react';
+import { createContext, useContext, useState, useMemo, useEffect, type ReactNode } from 'react';
 import type { Product, CartItem, Coupon, Order, PaymentMethod } from '../types';
 import { coupons } from '../data/coupons';
 import { orderService } from '../services/orderService';
 import { loyaltyService } from '../services/loyaltyService';
 import { productService } from '../services/productService';
+
+const STORAGE_KEY = 'rnordeste_cart';
+
+interface PersistedCart {
+  items: CartItem[];
+  cartUnitId: string | null;
+  currentUnitId: string | null;
+  appliedCoupon: Coupon | null;
+}
+
+function loadCart(): PersistedCart {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw) as PersistedCart;
+  } catch { /* ignore */ }
+  return { items: [], cartUnitId: null, currentUnitId: null, appliedCoupon: null };
+}
+
+function saveCart(data: PersistedCart) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch { /* ignore */ }
+}
 
 interface CartContextType {
   items: CartItem[];
@@ -30,12 +53,17 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
-  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
-  const [currentUnitId, setCurrentUnitId] = useState<string | null>(null);
-  const [cartUnitId, setCartUnitId] = useState<string | null>(null);
+  const initial = loadCart();
+  const [items, setItems] = useState<CartItem[]>(initial.items);
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(initial.appliedCoupon);
+  const [currentUnitId, setCurrentUnitId] = useState<string | null>(initial.currentUnitId);
+  const [cartUnitId, setCartUnitId] = useState<string | null>(initial.cartUnitId);
 
   const setCurrentUnit = (unitId: string | null) => setCurrentUnitId(unitId);
+
+  useEffect(() => {
+    saveCart({ items, cartUnitId, currentUnitId, appliedCoupon });
+  }, [items, cartUnitId, currentUnitId, appliedCoupon]);
 
   const addToCart = (product: Product): { success: boolean; conflict?: boolean } => {
     // Block mixing products from different units when both sides have a known unit
@@ -100,6 +128,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems([]);
     setAppliedCoupon(null);
     setCartUnitId(null);
+    try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
   };
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
