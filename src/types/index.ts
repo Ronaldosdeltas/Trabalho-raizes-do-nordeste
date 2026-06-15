@@ -1,6 +1,6 @@
 export type Category = 'Comidas Típicas' | 'Bebidas Regionais' | 'Doces';
 
-export type PaymentMethod = 'dinheiro' | 'credito' | 'debito' | 'pix' | 'raizes_card';
+export type PaymentMethod = 'dinheiro' | 'credito' | 'pix' | 'raizes_card';
 
 export interface User {
   id: string;

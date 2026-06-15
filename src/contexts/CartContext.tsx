@@ -4,8 +4,11 @@ import { coupons } from '../data/coupons';
 import { orderService } from '../services/orderService';
 import { loyaltyService } from '../services/loyaltyService';
 import { productService } from '../services/productService';
+import { useAuth } from './AuthContext';
 
-const STORAGE_KEY = 'rnordeste_cart';
+function storageKey(userId: string | null): string {
+  return userId ? `rnordeste_cart_${userId}` : 'rnordeste_cart_guest';
+}
 
 interface PersistedCart {
   items: CartItem[];
@@ -14,17 +17,17 @@ interface PersistedCart {
   appliedCoupon: Coupon | null;
 }
 
-function loadCart(): PersistedCart {
+function loadCart(userId: string | null): PersistedCart {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(storageKey(userId));
     if (raw) return JSON.parse(raw) as PersistedCart;
   } catch { /* ignore */ }
   return { items: [], cartUnitId: null, currentUnitId: null, appliedCoupon: null };
 }
 
-function saveCart(data: PersistedCart) {
+function saveCart(userId: string | null, data: PersistedCart) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    localStorage.setItem(storageKey(userId), JSON.stringify(data));
   } catch { /* ignore */ }
 }
 
@@ -53,20 +56,37 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const initial = loadCart();
-  const [items, setItems] = useState<CartItem[]>(initial.items);
-  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(initial.appliedCoupon);
-  const [currentUnitId, setCurrentUnitId] = useState<string | null>(initial.currentUnitId);
-  const [cartUnitId, setCartUnitId] = useState<string | null>(initial.cartUnitId);
+  const { currentUser, isLoading } = useAuth();
+
+  const [items, setItems] = useState<CartItem[]>([]);
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [currentUnitId, setCurrentUnitId] = useState<string | null>(null);
+  const [cartUnitId, setCartUnitId] = useState<string | null>(null);
+  // undefined = not yet initialized (auth still loading)
+  const [activeUserId, setActiveUserId] = useState<string | null | undefined>(undefined);
+
+  // Reload cart whenever the authenticated user changes
+  useEffect(() => {
+    if (isLoading) return;
+    const userId = currentUser?.userId ?? null;
+    if (userId === activeUserId) return;
+    const saved = loadCart(userId);
+    setItems(saved.items);
+    setAppliedCoupon(saved.appliedCoupon);
+    setCurrentUnitId(saved.currentUnitId);
+    setCartUnitId(saved.cartUnitId);
+    setActiveUserId(userId);
+  }, [currentUser?.userId, isLoading]);
+
+  // Persist cart changes (only after initialization)
+  useEffect(() => {
+    if (activeUserId === undefined) return;
+    saveCart(activeUserId, { items, cartUnitId, currentUnitId, appliedCoupon });
+  }, [items, cartUnitId, currentUnitId, appliedCoupon, activeUserId]);
 
   const setCurrentUnit = (unitId: string | null) => setCurrentUnitId(unitId);
 
-  useEffect(() => {
-    saveCart({ items, cartUnitId, currentUnitId, appliedCoupon });
-  }, [items, cartUnitId, currentUnitId, appliedCoupon]);
-
   const addToCart = (product: Product): { success: boolean; conflict?: boolean } => {
-    // Block mixing products from different units when both sides have a known unit
     if (items.length > 0 && currentUnitId !== null && cartUnitId !== null && currentUnitId !== cartUnitId) {
       return { success: false, conflict: true };
     }
@@ -128,7 +148,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems([]);
     setAppliedCoupon(null);
     setCartUnitId(null);
-    try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
+    try { localStorage.removeItem(storageKey(activeUserId ?? null)); } catch { /* ignore */ }
   };
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
@@ -151,7 +171,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const applyCoupon = (code: string): { success: boolean; error?: string } => {
     const trimmed = code.trim().toUpperCase();
 
-    // Check static coupons
     const staticCoupon = coupons.find(c => c.code.toUpperCase() === trimmed);
     if (staticCoupon) {
       if (staticCoupon.minOrder && subtotal < staticCoupon.minOrder) {
@@ -164,7 +183,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return { success: true };
     }
 
-    // Check loyalty coupons
     const loyaltyCoupon = loyaltyService.getLoyaltyCouponByCode(trimmed);
     if (loyaltyCoupon) {
       if (loyaltyCoupon.usedAt) return { success: false, error: 'Este cupom já foi utilizado.' };
@@ -192,7 +210,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const removeCoupon = () => setAppliedCoupon(null);
 
-  // Verifica disponibilidade atual dos produtos no carrinho
   const validateCart = (): Product[] => {
     const current = productService.getProducts();
     return items
@@ -223,12 +240,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     orderService.createOrder(order);
 
-    // Mark loyalty coupon as used if applicable
     if (appliedCoupon) {
       loyaltyService.markLoyaltyCouponUsed(appliedCoupon.code);
     }
 
-    // Award loyalty points for the order
     loyaltyService.awardOrderPoints(userId, order.id, order.total);
 
     clearCart();

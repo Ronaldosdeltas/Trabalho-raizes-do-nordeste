@@ -7,12 +7,14 @@ import { unitService } from '../services/unitService';
 import { isSeasonalActive } from '../utils/seasonal';
 import { reviewService } from '../services/reviewService';
 import { useCart } from '../contexts/CartContext';
+import { useToast } from '../contexts/ToastContext';
 
 export function ProductDetail() {
   const { productId } = useParams<{ productId: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { addToCart, clearCartAndAdd } = useCart();
+  const { showToast } = useToast();
   const [showConflictModal, setShowConflictModal] = useState(false);
 
   const product = productService.getById(Number(productId));
@@ -154,6 +156,7 @@ export function ProductDetail() {
               onClick={() => {
                 const result = addToCart(product);
                 if (result.conflict) setShowConflictModal(true);
+                else showToast(`${product.name} adicionado ao carrinho`);
               }}
               disabled={!isAvailable}
               className={`w-full py-4 rounded-xl font-bold text-base transition-colors duration-200 ${

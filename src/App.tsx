@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
+import { ToastProvider } from './contexts/ToastContext';
 import { LoyaltyProvider } from './contexts/LoyaltyContext';
 import { AdminProvider } from './contexts/AdminContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
@@ -32,6 +33,7 @@ function App() {
       <AuthProvider>
         <LoyaltyProvider>
         <CartProvider>
+        <ToastProvider>
           <Routes>
             <Route element={<CustomerLayout />}>
               <Route path="/" element={<Home />} />
@@ -103,6 +105,7 @@ function App() {
               element={<AdminProtectedRoute><AdminReports /></AdminProtectedRoute>}
             />
           </Routes>
+        </ToastProvider>
         </CartProvider>
         </LoyaltyProvider>
       </AuthProvider>

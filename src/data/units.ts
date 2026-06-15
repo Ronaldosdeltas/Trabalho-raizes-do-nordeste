@@ -10,7 +10,7 @@ export const units: Unit[] = [
     phone: '(85) 99999-0001',
     emoji: '',
     bgColor: 'bg-blue-50',
-    paymentMethods: ['dinheiro', 'credito', 'debito', 'pix', 'raizes_card'],
+    paymentMethods: ['dinheiro', 'credito', 'pix', 'raizes_card'],
     products: [
       { productId: 1, available: true },   // Carne de Sol
       { productId: 2, available: true },   // Baião de Dois
@@ -44,7 +44,7 @@ export const units: Unit[] = [
     phone: '(81) 99999-0002',
     emoji: '',
     bgColor: 'bg-amber-50',
-    paymentMethods: ['dinheiro', 'credito', 'debito', 'pix'],
+    paymentMethods: ['dinheiro', 'credito', 'pix'],
     products: [
       { productId: 1, available: true },   // Carne de Sol
       { productId: 2, available: true },   // Baião de Dois
@@ -74,7 +74,7 @@ export const units: Unit[] = [
     phone: '(84) 99999-0003',
     emoji: '',
     bgColor: 'bg-sky-50',
-    paymentMethods: ['dinheiro', 'debito', 'pix'],
+    paymentMethods: ['dinheiro', 'pix'],
     products: [
       { productId: 3, available: true },   // Tapioca
       { productId: 6, available: true },   // Queijo Coalho

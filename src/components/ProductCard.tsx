@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Product } from '../types';
 import { useCart } from '../contexts/CartContext';
+import { useToast } from '../contexts/ToastContext';
 import { isSeasonalActive } from '../utils/seasonal';
 
 interface ProductCardProps {
@@ -12,6 +13,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, showBadge = false, unitId }: ProductCardProps) {
   const { addToCart, clearCartAndAdd } = useCart();
+  const { showToast } = useToast();
   const [showConflictModal, setShowConflictModal] = useState(false);
   const isAvailable = product.available;
   const seasonalActive = product.seasonal ? isSeasonalActive(product.seasonal) : false;
@@ -62,6 +64,7 @@ export function ProductCard({ product, showBadge = false, unitId }: ProductCardP
           onClick={() => {
             const result = addToCart(product);
             if (result.conflict) setShowConflictModal(true);
+            else showToast(`${product.name} adicionado ao carrinho`);
           }}
           disabled={!isAvailable}
           className={`mt-auto font-semibold py-2 px-4 rounded-xl transition-colors duration-200 text-sm ${

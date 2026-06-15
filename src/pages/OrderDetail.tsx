@@ -24,7 +24,6 @@ const STATUS_STEPS: OrderStatus[] = ['Pedido recebido', 'Em preparo', 'Pronto pa
 const PAYMENT_LABELS: Record<PaymentMethod, { label: string; icon: string }> = {
   dinheiro:    { label: 'Dinheiro',          icon: '' },
   credito:     { label: 'Cartão de Crédito', icon: '' },
-  debito:      { label: 'Cartão de Débito',  icon: '' },
   pix:         { label: 'PIX',               icon: '' },
   raizes_card: { label: 'Raízes Card',       icon: '' },
 };
