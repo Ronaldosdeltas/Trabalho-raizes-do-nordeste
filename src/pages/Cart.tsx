@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Header } from '../components/Header';
 import { useCart } from '../contexts/CartContext';
@@ -24,7 +24,7 @@ export function Cart() {
   const [unavailableItems, setUnavailableItems] = useState<Product[]>([]);
   const [unitError, setUnitError] = useState(false);
 
-  const handleApplyCoupon = (e: FormEvent) => {
+  const handleApplyCoupon = (e: { preventDefault(): void }) => {
     e.preventDefault();
     setCouponError('');
     setCouponSuccess('');
@@ -104,63 +104,67 @@ export function Cart() {
               return (
                 <div key={item.product.id} className="space-y-0">
                   <div
-                    className={`bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm border transition-colors
+                    className={`bg-white rounded-2xl p-4 shadow-sm border transition-colors
                       ${unavailable ? 'border-orange-200 bg-orange-50/40' : 'border-gray-100'}`}
                   >
-                    <Link to={`/produto/${item.product.id}`} className="shrink-0">
-                      <div className={`${item.product.bgColor} w-16 h-16 rounded-xl flex items-center justify-center
-                        ${unavailable ? 'grayscale opacity-50' : ''}`}>
-                        <span className="text-xl font-bold text-gray-500">{item.product.name.charAt(0)}</span>
+                    {/* Linha 1: imagem + info + botão lixeira */}
+                    <div className="flex items-start gap-3">
+                      <Link to={`/produto/${item.product.id}`} className="shrink-0">
+                        <div className={`${item.product.bgColor} w-14 h-14 rounded-xl flex items-center justify-center
+                          ${unavailable ? 'grayscale opacity-50' : ''}`}>
+                          <span className="text-lg font-bold text-gray-500">{item.product.name.charAt(0)}</span>
+                        </div>
+                      </Link>
+
+                      <div className="flex-1 min-w-0">
+                        <p className={`font-semibold truncate ${unavailable ? 'text-gray-400' : 'text-gray-800'}`}>
+                          {item.product.name}
+                        </p>
+                        <p className={`text-xs mb-0.5 ${unavailable ? 'text-gray-400' : 'text-amber-600'}`}>
+                          {item.product.category}
+                        </p>
+                        <p className="text-gray-400 text-sm">{fmt(item.product.price)} / un</p>
                       </div>
-                    </Link>
 
-                    <div className="flex-1 min-w-0">
-                      <p className={`font-semibold truncate ${unavailable ? 'text-gray-400' : 'text-gray-800'}`}>
-                        {item.product.name}
-                      </p>
-                      <p className={`text-xs mb-1 ${unavailable ? 'text-gray-400' : 'text-amber-600'}`}>
-                        {item.product.category}
-                      </p>
-                      <p className="text-gray-400 text-sm">{fmt(item.product.price)} / un</p>
-                    </div>
-
-                    {/* Controles de quantidade */}
-                    <div className="flex items-center gap-2 shrink-0">
+                      {/* Remover — topo direito */}
                       <button
-                        onClick={() => updateQuantity(item.product.id, -1)}
-                        className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer font-bold"
-                        aria-label="Diminuir quantidade"
+                        onClick={() => removeFromCart(item.product.id)}
+                        className="shrink-0 text-gray-300 hover:text-red-500 transition-colors cursor-pointer p-1 -mt-0.5 -mr-1"
+                        aria-label="Remover item"
                       >
-                        −
-                      </button>
-                      <span className="w-8 text-center font-semibold text-gray-800">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => updateQuantity(item.product.id, +1)}
-                        className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer font-bold"
-                        aria-label="Aumentar quantidade"
-                      >
-                        +
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
                       </button>
                     </div>
 
-                    {/* Subtotal do item */}
-                    <p className={`w-20 text-right font-bold shrink-0 ${unavailable ? 'text-gray-400 line-through' : 'text-amber-700'}`}>
-                      {fmt(item.product.price * item.quantity)}
-                    </p>
+                    {/* Linha 2: controles de quantidade + subtotal */}
+                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => updateQuantity(item.product.id, -1)}
+                          className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer font-bold"
+                          aria-label="Diminuir quantidade"
+                        >
+                          −
+                        </button>
+                        <span className="w-8 text-center font-semibold text-gray-800">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => updateQuantity(item.product.id, +1)}
+                          className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer font-bold"
+                          aria-label="Aumentar quantidade"
+                        >
+                          +
+                        </button>
+                      </div>
 
-                    {/* Remover */}
-                    <button
-                      onClick={() => removeFromCart(item.product.id)}
-                      className="shrink-0 text-gray-400 hover:text-red-500 transition-colors cursor-pointer p-1"
-                      aria-label="Remover item"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
+                      <p className={`font-bold text-base ${unavailable ? 'text-gray-400 line-through' : 'text-amber-700'}`}>
+                        {fmt(item.product.price * item.quantity)}
+                      </p>
+                    </div>
                   </div>
 
                   {unavailable && (
