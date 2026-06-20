@@ -7,6 +7,7 @@ import { AdminProvider } from './contexts/AdminContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AdminProtectedRoute } from './components/admin/AdminProtectedRoute';
 import { CustomerLayout } from './components/CustomerLayout';
+import { ScrollToTop } from './components/ScrollToTop';
 import { Home } from './pages/Home';
 import { Cart } from './pages/Cart';
 import { Login } from './pages/Login';
@@ -29,6 +30,7 @@ import { AdminReports } from './pages/admin/AdminReports';
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <AdminProvider>
       <AuthProvider>
         <LoyaltyProvider>
